@@ -23,6 +23,16 @@ Click on it to start exporting your collections as Hugo content
 On the main Hugo plugin page, you will have to set manually the folder (must be on the same server) where
 you want the plugin to export the files.
 
+This can also be done by hand editing a file named `config.yaml` in the root dir of this addon.
+The file at the moment contains only one entry:
+
+    # Cockpit-hugo config settings
+    
+    hugo_base_dir: /users/zontar/web/sites/hugo
+
+
+
+
 ## Features
 
 If Cockpit CMSis configured to use multi languages, it will export multiple version of the pages under 
