@@ -14,11 +14,11 @@ The idea originated from Hugopit, a project to use Cockpit (the old version) as 
 
 ## Install 
 
-Simply copy the donloaded folder tree under 
+Simply copy the downloaded folder tree under the base directory of your Cockpit installation, in the addons subdir, like this:
 `<cockpit_base_dir>/modules/addons/Hugo`
 
-Upon reloading Cockpit CMS you should find another menu named Hugo. 
-Click on it to start exporting your collections as Hugo content
+Upon reloading Cockpit CMS you should find another menu named Hugo (the newspaper icon). 
+Click on it to start exporting your collections as Hugo content.
 
 
 ## Setup
@@ -40,3 +40,17 @@ The file at the moment contains only one entry:
 
 If Cockpit CMSis configured to use multi languages, it will export multiple version of the pages under 
 `content/defaul` and `content/LANG` where LANG is a two-letter ISO code such as 'en', 'fr', 'it' etc..
+
+Hugo entries in collections can be exported as plain Hugo files, or you can specify some fields as to translate
+to special Hugo fields, as will appear in the frontmatter.
+You can do it from the main page, with the big button `Configure Hugo fields`.
+
+Here, for every collection, you can see the fields and decide wether to give them some special name.
+If you give them some special name, the field value will appear in the frontmatter of the Hugo page, with the name you have chosen.
+If you don't choose any name, the field name will be used.
+
+You can also specify a `featured_image` if you have more than one image in the collection fields. 
+
+Of course, you can specify standard hugo frontmatter, such as `title`, `content`, etc..
+
+These values will be stored in the JSON parameter of the Hugo field, under the `hugo` keyword.
