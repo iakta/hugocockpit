@@ -1,0 +1,7 @@
+{
+  "name"       : "Hugo",
+  "version"    : "0.1",
+  "description": "Handle generation of Hugo static site.",
+  "homepage"   : "",
+  "license"    : "MIT"
+}
