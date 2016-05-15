@@ -7,6 +7,8 @@ It is a simple addon that will generate content for every collection in a Cockpi
 
 The idea originated from Hugopit, a project to use Cockpit (the old version) as a fronted to Hugo, on https://github.com/sjardim/Hugopit : part of the code is copied from there, but not many anymore. Thanks anyway.
 
+
+
 ## Requirements
 
 * Cockpit CMS Next: https://github.com/aheinze/cockpit
