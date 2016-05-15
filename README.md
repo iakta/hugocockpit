@@ -7,6 +7,8 @@ It is a simple addon that will generate content for every collection in a Cockpi
 
 The idea originated from Hugopit, a project to use Cockpit (the old version) as a fronted to Hugo, on https://github.com/sjardim/Hugopit : part of the code is copied from there, but not many anymore. Thanks anyway.
 
+![Screenshot of Hugo Cockpit](https://github.com/zontarian/hugocockpit/blob/master/hugocockpit-screenshot1.png)
+
 
 
 ## Requirements
@@ -46,6 +48,10 @@ If Cockpit CMSis configured to use multi languages, it will export multiple vers
 Hugo entries in collections can be exported as plain Hugo files, or you can specify some fields as to translate
 to special Hugo fields, as will appear in the frontmatter.
 You can do it from the main page, with the big button `Configure Hugo fields`.
+
+![Screenshot of Hugo Cockpit](https://github.com/zontarian/hugocockpit/blob/master/hugocockpit-screenshot2.png)
+
+
 
 Here, for every collection, you can see the fields and decide wether to give them some special name.
 If you give them some special name, the field value will appear in the frontmatter of the Hugo page, with the name you have chosen.
