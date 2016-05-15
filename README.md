@@ -1,13 +1,16 @@
 # Hugo Cockpit addon
 a Hugo addon for Cockpit CMS, allowing generating Hugo compatible content
 
+*version 0.1*
+
 It is a simple addon that will generate content for every collection in a Cockpit NEXT CMS.
 
 The idea originated from Hugopit, a project to use Cockpit (the old version) as a fronted to Hugo, on https://github.com/sjardim/Hugopit : part of the code is copied from there, but not many anymore. Thanks anyway.
 
-See https://github.com/aheinze/cockpit for Cockpit NEXT CSM
+## Requirements
 
-See https://gohugo.io/ for Hugo, a fast static site generator
+* Cockpit CMS Next: https://github.com/aheinze/cockpit
+* Hugo: https://gohugo.io/   a fast static site generator
 
 ## Install 
 
