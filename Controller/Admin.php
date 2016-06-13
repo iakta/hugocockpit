@@ -221,7 +221,11 @@ class Admin extends \Cockpit\AuthController {
     private function normalizeTOMLValue($value){
         //if string is multiline, surround with triple double-quotes """" and """"
         //in any case, escape quotes
-        $value=str_replace('"','\"',$value);
+        #$value=str_replace('"','\"',$value);
+        #maybe escape
+        #$value = htmlspecialchars($value, ENT_NOQUOTES );
+        $value = htmlentities($value,ENT_COMPAT|ENT_NOQUOTES, 'UTF-8');
+
         if(strpos($value,"\n")){
             return '"""'.$value.'"""';
         }
