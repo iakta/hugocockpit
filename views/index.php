@@ -183,6 +183,11 @@
                 langs.push(l);
             });
             App.request('/hugo/runHugo', { theme:this.themeName, languages:langs}).then(function(data){
+                if(data.status!='OK'){
+                    //error
+                    App.ui.notify("Error running hugo:\n"+data.error, "error");
+                    return;
+                }
                 App.ui.notify("Hugo run and site generated", "success");
                 console.log("Generate success:",data);
             },function(err){

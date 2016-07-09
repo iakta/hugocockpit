@@ -285,11 +285,21 @@ class Admin extends \Cockpit\AuthController {
             #now issue command
             $ret_lines=[];
             $ret=exec($command, $ret_lines, $cmd_out);
-            if($cmd_out){
-                $ret=array("status"=>"error","error"=>$ret);
+            //look for ERROR in every line
+            $error=false;
+            foreach ($ret_lines as $line){
+                if(stripos($line,'ERROR')!==false){
+                    $error=$line;
+                    break;
+                }
+            }
+            if($cmd_out || $error){
+                error_log("Returning error $cmd_out, $error");
+                $ret=array("status"=>"error","error"=>($error? $error : $ret));
+//                $this->app->response->status=500;
                 return json_encode($ret);
             }
-            error_log("Runned with $cmd_out and $ret and ".print_r($ret_lines,1));
+            error_log("Ran with $cmd_out and $ret and ".print_r($ret_lines,1));
         }
 
         $ret=array("status"=>"ok");
