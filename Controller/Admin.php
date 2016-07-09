@@ -3,7 +3,7 @@
 
 namespace Hugo\Controller;
 define('FRONTMATTER','__FRONtMATTER__');
-
+require_once(__DIR__.'/../bootstrap.php');
 
 class Admin extends \Cockpit\AuthController {
 
@@ -16,18 +16,42 @@ class Admin extends \Cockpit\AuthController {
 
     public function fields(){
         return $this->render('hugo:views/fields.php' );
-
     }
 
-//    public function getHugoDir(){
-//        $ret=array("hugo_dir"=>$this->HUGO_DIR);
-//        return json_encode($ret);
-//    }
+    public function settings($createsettings=false){
+
+        error_log("SETTINGS, create=$createsettings");
+        if($createsettings == 'create'){
+            //create file
+            cockpit('hugo')->createHugoSettings();
+        }
+        $file = $this->app->path(COCKPIT_HUGO_CONFIG_PATH);
+        $settingspath = $file;
+        //now strip HUGO PATH
+        $BASE_DIR=cockpit('hugo')->getHugoDir();
+        error_log("FIle is \n$file, home is \n$BASE_DIR");
+        if(strpos($file, $BASE_DIR )===0){
+            //strip it
+            $file = substr($file,  strlen($BASE_DIR));
+            if(substr($file,0,1)=='/'){
+                $file=substr($file,1);
+            }
+            error_log("FIle $BASE_DIR is stripped from $file");
+
+        }else{
+            error_log("POS is ".strpos($file, $BASE_DIR ));
+
+            $file='';
+        }
+        $settingsexists = $file;
+
+        return $this->render('hugo:views/settings.php', compact('settingsexists','settingspath') );
+    }
 
     public function generate(){
         $data = $this->param('data') ;
         $languages = $this->param('languages');
-        //this flag forces HUGO to behae in a multilanguage way even if only one langauge is passed, maybe we want
+        //this flag forces HUGO to behave in a multilanguage way even if only one language is passed, maybe we want
         //to regenerate just one language?
         error_log("GENERATE!".print_r($data,1));
 
@@ -217,6 +241,61 @@ class Admin extends \Cockpit\AuthController {
         $ret=array("status"=>"ok");
         return json_encode($ret);
     }
+
+    public function runHugo(){
+
+        $theme = $this->param('theme');
+        $languages = $this->param('languages');
+
+        //this flag forces HUGO to behae in a multilanguage way even if only one langauge is passed, maybe we want
+        //to regenerate just one language?
+        error_log("RUNNING HUGO!".print_r($theme,1));
+
+        //read from Lime config
+        $language_extensions=$this->app->retrieve("languages", null);
+        if(!$language_extensions)
+            $language_extensions=array();
+        $hasLanguages = count($language_extensions) >= 1 || $this->param('has_languages');
+
+        $BASE_DIR = cockpit('hugo')->getHugoDir();
+        error_log("BASE DIR " . print_r($BASE_DIR, 1));
+        //now iterate over every item in every language
+        error_log("LANGUAGES " . print_r($languages, 1));
+
+        #hugo -t iakta --config="$HUGO_DIR/config.toml"
+
+        foreach ($languages as $lang){
+            $ext= '';
+            if($lang != 'default'){
+                $ext="_$lang";
+            }
+
+            #build command
+            #read params from hugo config
+            $hugo_script= cockpit('hugo')->getHugoSetting('hugo_script');
+            $hugo_config_prefix= cockpit('hugo')->getHugoSetting('hugo_conf_prefix');
+            $hugo_config_extension= cockpit('hugo')->getHugoSetting('hugo_conf_extension');
+
+            #build config file name
+            $conf_filename="$hugo_config_prefix$ext.$hugo_config_extension";
+
+            $command = "cd $BASE_DIR ;$hugo_script -t $theme --config=\"$BASE_DIR/$conf_filename\"";
+            error_log("Running $command");
+
+            #now issue command
+            $ret_lines=[];
+            $ret=exec($command, $ret_lines, $cmd_out);
+            if($cmd_out){
+                $ret=array("status"=>"error","error"=>$ret);
+                return json_encode($ret);
+            }
+            error_log("Runned with $cmd_out and $ret and ".print_r($ret_lines,1));
+        }
+
+        $ret=array("status"=>"ok");
+        return json_encode($ret);
+    }
+
 
     private function normalizeTOMLValue($value){
         //if string is multiline, surround with triple double-quotes """" and """"

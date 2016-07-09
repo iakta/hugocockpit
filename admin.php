@@ -6,7 +6,9 @@ $app("acl")->addResource("hugo", ['manage.hugo']);
 
 $app->on('admin.init', function() {
 
-    $this->helper('admin')->addAssets('hugo:assets/components/cp-dirselect.tag'); 
+    $this->helper('admin')->addAssets('hugo:assets/components/cp-dirselect.tag');
+    $this->helper('admin')->addAssets('hugo:assets/components/cp-themeselect.tag');
+
 
     if (!$this->module('cockpit')->hasaccess('hugo', ['manage.hugo'])) {
         return;

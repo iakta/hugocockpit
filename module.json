@@ -1,6 +1,6 @@
 {
   "name"       : "Hugo",
-  "version"    : "0.1",
+  "version"    : "0.2",
   "description": "Handle generation of Hugo static site.",
   "homepage"   : "",
   "license"    : "MIT"

@@ -57,6 +57,39 @@
         </div>
     </div>
 
+    <h3>@lang('Run Hugo with theme (template)')</h3>
+    <div class="uk-grid">
+        <div class="uk-width-2-3">
+            <i>This command looks for a <em>{hugo_conf_prefix}.{hugo_conf_extension}</em> file for every language you have configured cockpit, in the base Hugo directory, ase set above.</i><br />
+            <i>For additional languages the file must be named <em>{hugo_conf_prefix}_XX.{hugo_conf_extension}</em>, where XX can be 'en', 'fr', 'de' etc..</i>
+            <br />
+            <i>For the time being, this assumes also the <em>{hugo_script}</em> command is in the server's path or is an absolute value.</i><br />
+
+        </div>
+        <div class="uk-width-1-3">
+            <a class="uk-button uk-button-large uk-width-1-1" href="@route('/hugo/settings')"><i class="uk-icon-gears uk-icon-justify"></i>  @lang('Settings file')</a><br />
+            <p> Every value used to run Hugo can be set in the Hugo plugin settings file with this button</p>
+        </div>
+    </div>
+    <div class="uk-grid">
+        <div class="uk-width-2-3">
+            <div class="uk-grid">
+                <div class="uk-width-1-3">@lang('Theme name'):</div>
+                <div class="uk-width-2-3">
+                    <cp-themeselect alert="@lang('Please select theme')"/>
+                    <span if="themeName">
+                    </span>
+                    <span class="uk-alert-danger" if="{!themeName}">@lang('PLEASE SET HUGO DIR AND THEME NAME')<br />
+                    @lang('you won\'t be able to run Hugo and generate HTML unless you set it')</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="uk-width-1-3">
+            <button class="uk-button uk-button-large uk-button-primary " disabled="{ !hugoDir || !themeName}" type="button" onclick="{ runHugo }"><i class="uk-icon-justify uk-icon-arrow-down"></i>@lang('Run Hugo')</button>
+        </div>
+    </div>
+
 
     <script type="view/script">
 
@@ -66,6 +99,7 @@
         this.collections = [];
         this.oneSelected=false;
         this.hugoDir='';
+        this.themeName='';
         this.languages    = App.$data.languages;
 
         this.on('mount', function() {
@@ -92,10 +126,16 @@
 
             }.bind(this));
 
-            App.callmodule('hugo:getHugoDir',true).then(function(data){
+            App.callmodule('hugo:getHugoSettings',true).then(function(data){
                 console.log("HUGOD IR",data.result);
-                this.hugoDir=data.result;
+                this.hugoDir=data.result['hugo_base_dir'];
+                this.themeName=data.result['hugo_theme'];
+                this.hugo_conf_extension=data.result['hugo_conf_extension'];
+                this.hugo_conf_prefix=data.result['hugo_conf_prefix'];
+                this.hugo_script=data.result['hugo_script'];
+
                 this.update();
+                console.log("HUGO THEME",this.themeName);
             }.bind(this));
         });
 
@@ -133,12 +173,31 @@
             });
         }
 
+        runHugo(){
+            //check
+            if(!this.hugoDir || ! this.themeName){
+                console.error("Error, o theme or hugo dir");
+            }
+            langs=['default'];
+            this.languages.forEach(function(l){
+                langs.push(l);
+            });
+            App.request('/hugo/runHugo', { theme:this.themeName, languages:langs}).then(function(data){
+                App.ui.notify("Hugo run and site generated", "success");
+                console.log("Generate success:",data);
+            },function(err){
+                App.ui.notify("Error running hugo", "error");
+                console.log("Generate error",err);
+            });
+        }
+
         test(){
             for(c in this.collections){
                     col=this.collections[c];
                    console.log(col);
                 };
-                console.log("chTHISecl",this);
+ //            console.log("chTHISecl",this);
+            console.log("Theme name "+this.themeName);
         }
 
 
@@ -167,8 +226,10 @@
 
                 selectbtn.on('click', function() {
                     App.callmodule('hugo:setHugoDir',path).then(function(data){
-                        console.log("Called setDir");
+//console.log("Called setDir, ",$this);
                         $this.hugoDir=path;
+                        $this.update();
+
                     });
                     dialog.hide();
                 });
@@ -183,6 +244,7 @@
 
                 dialog.show();
         }
+
 
     </script>
 

@@ -42,7 +42,7 @@ The file at the moment contains only one entry:
 
 ## Features
 
-If Cockpit CMSis configured to use multi languages, it will export multiple version of the pages under 
+If Cockpit CMS is configured to use multiple languages, it will export multiple version of the pages under
 `content/defaul` and `content/LANG` where LANG is a two-letter ISO code such as 'en', 'fr', 'it' etc..
 
 Hugo entries in collections can be exported as plain Hugo files, or you can specify some fields as to translate
