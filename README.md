@@ -21,6 +21,8 @@ The idea originated from Hugopit, a project to use Cockpit (the old version) as 
 Simply copy the downloaded folder tree under the base directory of your Cockpit installation, in the addons subdir, like this:
 `<cockpit_base_dir>/modules/addons/Hugo`
 
+IMPORTANT: if cloning from git, remember to rename the dir `hugocockpit` to `Hugo` (with capital `H`). 
+
 Upon reloading Cockpit CMS you should find another menu named Hugo (the newspaper icon). 
 Click on it to start exporting your collections as Hugo content.
 
