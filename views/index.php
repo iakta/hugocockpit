@@ -6,12 +6,12 @@
 
 <div class="uk-margin-large-top uk-form" riot-view>
 
-    <h3>@lang('Generate HUGO site') <span class="uk-alert-danger">@lang('Use with caution, still Beta')</span></h3>
+    <h3>1. @lang('Generate HUGO site') <span class="uk-alert-danger">@lang('Use with caution, still Beta')</span></h3>
 
     <div class="uk-grid">
         <div class="uk-width-2-3">
             <div class="uk-grid">
-                <div class="uk-width-1-3">@lang('Hugo dir'):</div>
+                <div class="uk-width-1-3"><strong>@lang('Hugo dir')</strong>:</div>
                 <div class="uk-width-2-3">
                     <a href="#" onclick="{configureHugoDir}"><i class="uk-icon-justify uk-icon-folder"></i></a>
                     <span if="hugoDir">{hugoDir}</span>
@@ -22,10 +22,10 @@
                 </div>
             </div>
             <div class="uk-grid uk-margin-small-top">
-                <div class="uk-width-1-3">@lang('Generating site for language '):</div>
-                <div class="uk-width-2-3"><strong>@lang('default')</strong>
+                <div class="uk-width-1-3"><strong>@lang('Generating site for language ')</strong>:</div>
+                <div class="uk-width-2-3"><em>@lang('default')</em>
                     <span if="languages.length"> and </span>
-                    <strong each="{language in languages}"> {language} </strong>
+                    <em each="{language in languages}"> {language} </em>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
     <div class="uk-grid uk-margin-small-top">
         <div class="uk-flex-item-1">
             @lang('Select collection for which to generate Hugo pages')<br />
-            <em>@lang('Each collection will be rendered under a Hugo section, that is a subdir under \'content\'')</em>
+            <i>@lang('Each collection will be rendered under a Hugo section, that is a subdir under \'content\'')</i>
         </div>
     </div>
     <div class="uk-grid uk-margin-small-top">
@@ -57,7 +57,7 @@
         </div>
     </div>
 
-    <h3>@lang('Run Hugo with theme (template)')</h3>
+    <h3>2. @lang('Run Hugo with theme (template)')</h3>
     <div class="uk-grid">
         <div class="uk-width-2-3">
             <i>This command looks for a <em>{hugo_conf_prefix}.{hugo_conf_extension}</em> file for every language you have configured cockpit, in the base Hugo directory, ase set above.</i><br />
@@ -74,7 +74,7 @@
     <div class="uk-grid">
         <div class="uk-width-2-3">
             <div class="uk-grid">
-                <div class="uk-width-1-3">@lang('Theme name'):</div>
+                <div class="uk-width-1-3"><strong>@lang('Theme name')</strong>:</div>
                 <div class="uk-width-2-3">
                     <cp-themeselect alert="@lang('Please select theme')"/>
                     <span if="themeName">
@@ -183,7 +183,7 @@
                 langs.push(l);
             });
             App.request('/hugo/runHugo', { theme:this.themeName, languages:langs}).then(function(data){
-                if(data.status!='OK'){
+                if(data.status!='ok'){
                     //error
                     App.ui.notify("Error running hugo:\n"+data.error, "error");
                     return;
