@@ -27,7 +27,7 @@ $this->module("hugo")->extend([
 
         if(!file_exists($SETTINGS_FILE)){
             //create sample file
-            $myfile = fopen($SETTINGS_FILE.'k', "w") or die("Unable to open file!");
+            $myfile = fopen($SETTINGS_FILE, "w") or die("Unable to open file!");
             fwrite($myfile, HUGO_CONFIG_INTRO);
             fwrite($myfile, HUGO_CONFIG_SAMPLE);
             fclose($myfile);
