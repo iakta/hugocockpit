@@ -19,7 +19,7 @@ The idea originated from Hugopit, a project to use Cockpit (the old version) as 
 ## Install 
 
 Simply copy the downloaded folder tree under the base directory of your Cockpit installation, in the addons subdir, like this:
-`<cockpit_base_dir>/modules/addons/Hugo`
+`<cockpit_base_dir>/modules/addons/Hugo`  or `<cockpit_base_dir>/addons` for later versions.
 
 IMPORTANT: if cloning from git, remember to rename the dir `hugocockpit` to `Hugo` (with capital `H`). 
 
