@@ -14,7 +14,7 @@
                 <div class="uk-width-1-3"><strong>@lang('Hugo dir')</strong>:</div>
                 <div class="uk-width-2-3">
                     <a href="#" onclick="{configureHugoDir}"><i class="uk-icon-justify uk-icon-folder"></i></a>
-                    <span if="hugoDir">{hugoDir}</span>
+                    <span if="{hugoDir}">{hugoDir}</span>
                     <span class="uk-alert-danger" if="{!hugoDir}">@lang('PLEASE SET HUGO DIR')<br />
                     @lang('you won\'t be able to generate the files for Hugo unless you set it')</span>
 
@@ -24,7 +24,7 @@
             <div class="uk-grid uk-margin-small-top">
                 <div class="uk-width-1-3"><strong>@lang('Generating site for language ')</strong>:</div>
                 <div class="uk-width-2-3"><em>@lang('default')</em>
-                    <span if="languages.length"> and </span>
+                    <span if="{languages.length>0}"> and </span>
                     <em each="{language in languages}"> {language} </em>
                 </div>
             </div>
@@ -46,8 +46,9 @@
     <div class="uk-grid uk-margin-small-top">
         <div class="uk-width-2-3">
         <fieldset class="" data-uk-margin>
-            <div class="uk-form-row" each="{ collection, meta in collections }">
-                <input type="checkbox" name="{collection}" checked="{meta.selected}" onclick="{meta.toggle}">  { meta.label || collection }
+            <div class="uk-form-row" each="{ meta, collection in collections }">
+                <input type="checkbox" bind="meta.selected" name="{ collection.name }" checked="{ collection.selected }"
+                       onclick="{ toggle_collection.bind(this, meta)   }"> { collection.name || collection }
             </div>
         </fieldset>
         </div>
@@ -77,7 +78,7 @@
                 <div class="uk-width-1-3"><strong>@lang('Theme name')</strong>:</div>
                 <div class="uk-width-2-3">
                     <cp-themeselect alert="@lang('Please select theme')"/>
-                    <span if="themeName">
+                    <span if="{themeName}">
                     </span>
                     <span class="uk-alert-danger" if="{!themeName}">@lang('PLEASE SET HUGO DIR AND THEME NAME')<br />
                     @lang('you won\'t be able to run Hugo and generate HTML unless you set it')</span>
@@ -94,6 +95,7 @@
     <script type="view/script">
 
         var $this = this;
+        this.mixin(RiotBindMixin);
 
         this.ready  = false;
         this.collections = [];
@@ -107,18 +109,13 @@
             App.callmodule('collections:collections', true).then(function(data) {
 
                 this.collections = data.result;
-                console.log(this.collections);
+                console.log('collections are',this.collections);
                 //add selection flag
                 for(c in this.collections){
                     col=this.collections[c];
                     col['selected']=false;
 
                     self=this;
-                    col.toggle=function(e){
-                        col=e.item.meta;
-                        col.selected = !col.selected;
-                        self.checkCollectionSelected();
-                    }
                 };
 
                 this.ready  = true;
@@ -139,6 +136,12 @@
             }.bind(this));
         });
 
+
+        toggle_collection(col){
+            col.selected = !col.selected;
+            this.checkCollectionSelected();
+            console.log("Coll toggle",col.selected);
+        }
 
         checkCollectionSelected(){
             for(c in this.collections){
@@ -211,13 +214,14 @@
                     previewfiles: false,
                     pattern  : '*',
                     typefilter: '',
-                    path: false,
+                    path: $this.hugoDir,
                     selected : []
                 }, {});
+                // '<cp-dirselect path="'+$this.hugoDir+'">
                 var   dialog = UIkit.modal.dialog([
                     '<div>',
                         '<div class="uk-modal-header uk-text-large">Select HUGO Dir</div>',
-                        '<cp-dirselect path="'+$this.hugoDir+'"></cp-dirselect>',
+                        '<cp-dirselect  ></cp-dirselect>',
                         '<div class="uk-modal-footer uk-text-right">',
                             '<button class="uk-button uk-button-primary uk-margin-right uk-button-large uk-hidden js-select-button">Select dir</button>',
                             '<button class="uk-button uk-button-large uk-modal-close">Close</button>',

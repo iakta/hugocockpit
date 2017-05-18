@@ -44,8 +44,8 @@ class Admin extends \Cockpit\AuthController {
             $file='';
         }
         $settingsexists = $file;
-
-        return $this->render('hugo:views/settings.php', compact('settingsexists','settingspath') );
+        $settings_cockpit_path =str_replace(COCKPIT_DIR == COCKPIT_DOCS_ROOT ? COCKPIT_DIR : dirname(COCKPIT_DIR).'/', '', $settingspath);
+        return $this->render('hugo:views/settings.php', compact('settingsexists','settingspath','settings_cockpit_path') );
     }
 
     public function generate(){

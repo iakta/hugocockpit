@@ -43,7 +43,9 @@ $this->module("hugo")->extend([
     },
     'getHugoDir' => function(){
         $s =   cockpit('hugo')->getHugoSettings();
-        return $s[HUGO_BASE_DIR_KEY];
+        if(key_exists(HUGO_BASE_DIR_KEY, $s))
+            return $s[HUGO_BASE_DIR_KEY];
+        return null;
     },
     'getHugoSetting'=>function($key){
         $value='';

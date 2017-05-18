@@ -14,8 +14,8 @@
 
             <h4>@lang('Collections')</h4>
 
-            <div class="uk-margin" each="{collection, meta in collections}">
-                <button class="uk-button uk-width-2-3 uk-button-large uk-text-left" onclick="{editfields}"><i class="uk-icon-gear uk-icon-justify"></i>{meta.label || collection}</button>
+            <div class="uk-margin" each="{meta, collection in collections}">
+                <button class="uk-button uk-width-2-3 uk-button-large uk-text-left" onclick="{editfields}"><i class="uk-icon-gear uk-icon-justify"></i>{ meta.name || collection }</button>
                 <br />
                 {meta.description}
             </div>
@@ -29,9 +29,9 @@
 
                 <h4>@lang('Fields') <span if="{collection.name}">@lang('for') <strong>{collection.label}</strong></span></h4>
                 <p show="{ !collection.fields }">@lang("Please select a collection")</p>
-                <p show="{ collection.fields.length }"> @lang('insert Hugo meta name (for example \'title\' or \'content\'), if any, and select featured image (if more than one image)')</p>
-                <div class="uk-margin-small-top" show="{ collection.fields.length }">
-                    <form onsubmit="{ storehugo}" class="uk-form uk-margin-top">
+                <p if="{ collection.fields && collection.fields.length }"> @lang('insert Hugo meta name (for example \'title\' or \'content\'), if any, and select featured image (if more than one image)')</p>
+                <div class="uk-margin-small-top" show="{ collection.fields && collection.fields.length }">
+                    <div  class="uk-form uk-margin-top">
 
 
                         <div class="uk-grid uk-margin-small-top" each="{field,idx in collection.fields}">
@@ -49,9 +49,9 @@
                         </div>
 
                         <div class="uk-button-group uk-margin-right uk-margin-large-top uk-width-1-5">
-                            <button class="uk-button uk-button-large uk-button-primary uk-width-1-1" >@lang('Save')</button>
+                            <button class="uk-button uk-button-large uk-button-primary uk-width-1-1" onclick="{ storehugo}">@lang('Save')</button>
                         </div>
-                    </form>
+                    </div>
 
                 </div>
                 <div show="{ !collection }">
@@ -74,6 +74,7 @@
             App.callmodule('collections:collections', true).then(function(data) {
 
                 this.collections = data.result;
+                console.log("Collections are",this.collections);
                 for(c in this.collections){
                     col=this.collections[c];
                     col.featuredfield=null;
@@ -118,7 +119,7 @@
             this.collection.featuredfield=e.item.field.name;
         }
 
-        storehugo(){
+        storehugo(event){
             //store hugo collections metafields..
             var collection = this.collection;
             collection.fields.forEach(function(f){

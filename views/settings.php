@@ -9,7 +9,7 @@
 
     @if ($settingsexists)
     @if (is_writable($settingspath))
-    <picoedit path="{{$settingsexists}}"></picoedit>
+    <picoedit path="{{$settings_cockpit_path}}"></picoedit>
     @else
     <div class="uk-alert uk-alert-danger">
         @lang('Custom settings file is not writable').
@@ -28,13 +28,11 @@
 
         var $this = this;
 
-
-
 </script>
 
 <style>
 
-    picoedit .CodeMirror {
+    picoedit.CodeMirror {
         height: auto;
     }
 
