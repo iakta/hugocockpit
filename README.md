@@ -1,7 +1,7 @@
 # Hugo Cockpit addon
 a Hugo addon for Cockpit CMS, allowing generating Hugo compatible content
 
-*version 0.1*
+*version 0.3*
 
 It is a simple addon that will generate content for every collection in a Cockpit NEXT CMS.
 
