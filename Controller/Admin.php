@@ -313,7 +313,7 @@ class Admin extends \Cockpit\AuthController {
         #$value=str_replace('"','\"',$value);
         #maybe escape
         #$value = htmlspecialchars($value, ENT_NOQUOTES );
-        $value = htmlentities($value,ENT_COMPAT|ENT_NOQUOTES, 'UTF-8');
+//        $value = htmlentities($value,ENT_COMPAT|ENT_NOQUOTES, 'UTF-8');
 
         if(strpos($value,"\n")){
             return '"""'.$value.'"""';
