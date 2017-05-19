@@ -17,15 +17,13 @@
                     <span if="{hugoDir}">{hugoDir}</span>
                     <span class="uk-alert-danger" if="{!hugoDir}">@lang('PLEASE SET HUGO DIR')<br />
                     @lang('you won\'t be able to generate the files for Hugo unless you set it')</span>
-
-
                 </div>
             </div>
             <div class="uk-grid uk-margin-small-top">
                 <div class="uk-width-1-3"><strong>@lang('Generating site for language ')</strong>:</div>
                 <div class="uk-width-2-3"><em>@lang('default')</em>
                     <span if="{languages.length>0}"> and </span>
-                    <em each="{language in languages}"> {language.label} </em>
+                    <em each="{language in languages}"> {language.label || language.code || language} </em>
                 </div>
             </div>
         </div>
@@ -133,6 +131,7 @@
 
                 this.update();
                 console.log("HUGO THEME",this.themeName);
+                 this.trigger('abc');
             }.bind(this));
         });
 
@@ -164,7 +163,7 @@
             };
             langs=['default'];
             this.languages.forEach(function(l){
-                langs.push(l);
+                langs.push(l.code);
             });
             console.log(cols,langs);
             App.request('/hugo/generate', {data:cols, languages:langs }).then(function(data){
@@ -208,7 +207,6 @@
             console.log("Theme name "+this.themeName);
         }
 
-
         configureHugoDir(){
             options  = App.$.extend({
                     previewfiles: false,
@@ -238,7 +236,8 @@
 //console.log("Called setDir, ",$this);
                         $this.hugoDir=path;
                         $this.update();
-
+                        // not very elegant
+                        location.reload();
                     });
                     dialog.hide();
                 });

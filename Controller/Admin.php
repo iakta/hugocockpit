@@ -50,16 +50,24 @@ class Admin extends \Cockpit\AuthController {
         $settingsexists = $file;
         $settings_cockpit_path =str_replace(COCKPIT_DIR == COCKPIT_DOCS_ROOT ? COCKPIT_DIR : dirname(COCKPIT_DIR).'/', '', $settingspath);
         $settingsexists = $settings_cockpit_path;
-        error_log("SEttCP ".$settings_cockpit_path." SEXis".$settingsexists);
         return $this->render('hugo:views/settings.php', compact('settingsexists','settingspath','settings_cockpit_path') );
     }
 
     public function generate(){
         $data = $this->param('data') ;
         $languages = $this->param('languages');
+
+        # if true, generate one page per language in a sperate dir
+        # i.e.
+        # public/default/.. pages for default language
+        # public/en/.. pages for english
+        # pages/fr/.. pages for french etc
+        # if false, it's a mess
+        $separate_language_sites = 1;
+
         //this flag forces HUGO to behave in a multilanguage way even if only one language is passed, maybe we want
         //to regenerate just one language?
-        error_log("GENERATE!".print_r($data,1));
+        error_log("GENERATE!".print_r($data,1)."\n".print_r($languages,1));
 
         //read from Lime config
         $language_extensions=$this->app->retrieve("languages", null);
@@ -69,37 +77,38 @@ class Admin extends \Cockpit\AuthController {
 
         error_log("Languages? $hasLanguages Hardwired ".print_r($language_extensions,1));
 
+        if(!$languages || count($languages)==0 || !$hasLanguages){
+            $languages= 'default';
+        }
+
+        error_log("GENERATING SITE FOR THESE LANGUAGES ".print_r($languages,1));
+
         foreach ($data as $collectionName){
             error_log("Coll name is $collectionName");
             //get collection
             $c=cockpit("collections")->collection($collectionName);
-            error_log("collection!".print_r($c,1));
+//            error_log("collection!".print_r($c,1));
 
             $collid = $c["_id"];
             $fields=$c['fields'];
             //get entries
             $entries = (array)$this->app->storage->find("collections/{$collid}");
             //
-            error_log("ENTRIES!".print_r($entries,1));
+//            error_log("ENTRIES!".print_r($entries,1));
+//            error_log("FIELDS!".print_r($fields,1));
 
 
             $BASE_DIR=cockpit('hugo')->getHugoDir();
             error_log("BASE DIR ".print_r($BASE_DIR,1));
             //now iterate over every item in every language
-            error_log("LANGUAGES ".print_r($languages,1));
-
-
-            if(!$languages || count($languages)==0 || !$hasLanguages){
-                $languages=['default'];
-            }
 
             $count=0;
             foreach ($entries as $entry):
                 $count++;
-
+//                error_log("ENTRY!".print_r($entry,1));
 
                 foreach($languages as $language) {
-
+                    error_log("LANGUAGE1 $language for entry ".print_r($entry,1));
                     if($hasLanguages) {
                         $output_dir = $BASE_DIR . "/content/$language/$collectionName";
                         if(!is_dir("$BASE_DIR/content/$language"))
@@ -179,45 +188,25 @@ class Admin extends \Cockpit\AuthController {
                     $frontmatter=$entry[FRONTMATTER];
                     error_log("GENERATING AUTOFIELDS: skipping ".print_r($frontmatter,1));
 
-                    foreach ($entry as $fieldname => $value) {
+                    // now simply iterate over fields, an pick the one in the correct language
+                    foreach($fields as $field){
                         //skip fields already put in frontmatter
+                        $fieldname = $field['name'];
                         if ( $fieldname==FRONTMATTER || ( isset($frontmatter)  && in_array($fieldname, $frontmatter))) {
                             error_log("Skipping field for frontmatter ".$fieldname);
                             continue;
                         }
-
-                        //get wether field need to be localized
-                        $field = $this->getField($fields, $fieldname, $language_extensions);
-
-//error_log("GEtting field for $fieldname: field: ".$field['name']." l ".$field['localize']);
-                        //skip fields not in current language, if any
-                        if($field['localize']) {
-                            if ($language && $language != 'default') {
-                                //look for suffix, else skip
-                                if (!$this->endsWith($fieldname, $suffix))
-                                    continue;
-                                //change fieldname by stripping
-                                $fieldname = substr($fieldname, 0, strlen($fieldname) - strlen($suffix));
-                            }
+                        //now get field value, in entry
+                        $value = '';
+                        if(!$field['localize'] || !$language || $language=='default'){
+                            //get plain name.. i.e.  'text' if not a localized field, or language is default
+                            if(key_exists($fieldname, $entry))
+                                $value = $entry[$fieldname];
+                        }else{
+                            //loog for field named 'text_en' for example
+                            if(key_exists($fieldname.'_'.$language, $entry))
+                                $value = $entry[$fieldname.'_'.$language];
                         }
-
-                        if($language=='default' && $hasLanguages){
-                                //skip if field ends in one of the available language
-                            $skip=false;
-                            foreach($language_extensions as $ext){
-                                //error_log("Testing $fieldname with $ext");
-                                if($this->endsWith($fieldname, "_$ext")) {
-                                    $skip = true;
-                                    break;
-                                }
-                            }
-                            if($skip)
-                                continue;
-
-                        }
-
-                        error_log("Generating field for $language -> $fieldname");
-
 
                         if (is_array($value)) { //image
                             error_log("VALUE IS ARRAY:".print_r($value,1));
@@ -227,6 +216,8 @@ class Admin extends \Cockpit\AuthController {
                             $file_content .= $fieldname . ' =  ' . $this->normalizeTOMLValue($value) . "\n";
                         }
                     }
+
+
                     $file_content .= "+++\n\n$content";
 
                     error_log("Creating " . $file_content);
@@ -372,6 +363,7 @@ class Admin extends \Cockpit\AuthController {
                     if($suffix && $field['localize']){
                         //look for localized value
                         array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                        array_push($entry[FRONTMATTER],$field['name']);
                         return $entry[$field['name'].$suffix];
                     }
                     array_push($entry[FRONTMATTER],$field['name']);
@@ -386,6 +378,7 @@ class Admin extends \Cockpit\AuthController {
                 if($suffix && $field['localize']){
                     //look for localized value
                     array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                    array_push($entry[FRONTMATTER],$field['name']);
                     return $entry[$field['name'].$suffix];
                 }
                 array_push($entry[FRONTMATTER],$field['name']);

@@ -27,7 +27,7 @@
 
         function testDirApi(path){
             App.callmodule('hugo:isDir',[path]).then(function(data){
-                console.log("HUGO DIR",data.result);
+                //console.log("HUGO DIR",data.result);
                 selectenable = data.result ? true : false;
                 params={selectable: selectenable, path:path}
                 App.$($this.root).trigger('selectionchange',  params );

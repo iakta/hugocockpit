@@ -42,7 +42,8 @@ $this->module("hugo")->extend([
         return  $settings;//json_encode($ret);
     },
     'getHugoDir' => function(){
-        $s =   cockpit('hugo')->getHugoSettings();
+        $s =cockpit('hugo')->getHugoSettings();
+        error_log("Config file is ".print_r($s,1));
         if(key_exists(HUGO_BASE_DIR_KEY, $s))
             return $s[HUGO_BASE_DIR_KEY];
         return null;
