@@ -55,7 +55,7 @@ LANG will be "en" and "frCA" etc..
 Of course remember to have at least some fields configured as "Localize" while creating fields for a collection.
 
 Hugo entries in collections can be exported as plain Hugo files, or you can specify some fields as to translate
-to special Hugo fields, as will appear in the frontmatter.
+to special Hugo fields, that will appear in the frontmatter or as the content.
 You can do it from the main page, with the big button `Configure Hugo fields`.
 
 ![Screenshot of Hugo Cockpit](https://github.com/zontarian/hugocockpit/blob/master/hugocockpit-screenshot2.png)
@@ -63,11 +63,12 @@ You can do it from the main page, with the big button `Configure Hugo fields`.
 
 
 Here, for every collection, you can see the fields and decide wether to give them some special name.
-If you give them some special name, the field value will appear in the frontmatter of the Hugo page, with the name you have chosen.
-If you don't choose any name, the field name will be used.
+If you give them some special name, the field value will appear in the frontmatter of the Hugo page with the name you have chosen
+If you specify `content` it will appear as the page content.. 
+If you don't choose any special name, the field name will be used and the field will appear in the frontmatter.
 
 You can also specify a `featured_image` if you have more than one image in the collection fields. 
 
-Of course, you can specify standard hugo frontmatter, such as `title`, `content`, etc..
+Of course, you can specify also standard hugo frontmatter names, they will be translated. Some names have special meaning for the plugin:  At the moment recognized frontmatter special fields are `title`, `slug` (the name of the generated .md file), `date`, `publishdate` and of course the content: `content`.
 
 These values will be stored in the JSON parameter of the Hugo field, under the `hugo` keyword.

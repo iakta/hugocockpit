@@ -83,14 +83,14 @@ class Admin extends \Cockpit\AuthController {
 
         error_log("GENERATING SITE FOR THESE LANGUAGES ".print_r($languages,1));
 
-        foreach ($data as $collectionName){
+        foreach ($data as $collectionName) {
             error_log("Coll name is $collectionName");
             //get collection
-            $c=cockpit("collections")->collection($collectionName);
+            $c = cockpit("collections")->collection($collectionName);
 //            error_log("collection!".print_r($c,1));
 
             $collid = $c["_id"];
-            $fields=$c['fields'];
+            $fields = $c['fields'];
             //get entries
             $entries = (array)$this->app->storage->find("collections/{$collid}");
             //
@@ -98,24 +98,23 @@ class Admin extends \Cockpit\AuthController {
 //            error_log("FIELDS!".print_r($fields,1));
 
 
-            $BASE_DIR=cockpit('hugo')->getHugoDir();
-            error_log("BASE DIR ".print_r($BASE_DIR,1));
+            $BASE_DIR = cockpit('hugo')->getHugoDir();
+            error_log("BASE DIR " . print_r($BASE_DIR, 1));
             //now iterate over every item in every language
 
-            $count=0;
-            foreach ($entries as $entry):
+            $count = 0;
+            foreach ($entries as $entry){
                 $count++;
 //                error_log("ENTRY!".print_r($entry,1));
 
-                foreach($languages as $language) {
-                    error_log("LANGUAGE1 $language for entry ".print_r($entry,1));
-                    if($hasLanguages) {
+                foreach ($languages as $language) {
+                    error_log("LANGUAGE1 $language for entry " . print_r($entry, 1));
+                    if ($hasLanguages) {
                         $output_dir = $BASE_DIR . "/content/$language/$collectionName";
-                        if(!is_dir("$BASE_DIR/content/$language"))
+                        if (!is_dir("$BASE_DIR/content/$language"))
                             mkdir("$BASE_DIR/content/$language");
-                    }
-                    else {
-                        $language=null; //not used
+                    } else {
+                        $language = null; //not used
                         $output_dir = $BASE_DIR . "/content/$collectionName";
                     }
                     //create Section dir
@@ -135,17 +134,17 @@ class Admin extends \Cockpit\AuthController {
                     //wehere there are options for Hugo..
 
                     ///store in entry list of fields taken
-                    $entry[FRONTMATTER]=array();
+                    $entry[FRONTMATTER] = array();
 
                     //title - look for a hugo field named title
-                    $title = $this->getHugoField($entry, $fields, $language,  'title');
+                    $title = $this->getHugoField($entry, $fields, $language, 'title');
                     $slug = $this->getHugoField($entry, $fields, $language, 'slug');
                     if (!$slug)
                         $slug = str_replace(' ', '_', $title);
 
                     $content = $this->getHugoField($entry, $fields, $language, 'content');
                     $featured_image = $this->getHugoFeaturedImage($entry, $fields, $language);
-                    error_log("Found title $title, slug $slug     "  );
+                    error_log("Found title $title, slug $slug     ");
 
                     //post fields
                     $publishdate = date('c');
@@ -163,60 +162,59 @@ class Admin extends \Cockpit\AuthController {
                         $file_content .= "slug = " . $this->normalizeTOMLValue($slug) . "\n";
                     if ($featured_image) {
                         //adjust images.. subst /static/media with .. /en/media or /default/media
-                        if(strpos($featured_image,'/')!==0) {
+                        if (strpos($featured_image, '/') !== 0) {
                             $featured_image = '/' . $featured_image;
 
                         }
-                        if($language=='default'){
-                            $featured_image = str_replace('/static/',"/",$featured_image);
-                        }elseif($language){
-                            $featured_image = str_replace('/static/',"/",$featured_image);
-                        }else{
-                            $featured_image = str_replace('/static/','/',$featured_image);
-                        } 
+                        if ($language == 'default') {
+                            $featured_image = str_replace('/static/', "/", $featured_image);
+                        } elseif ($language) {
+                            $featured_image = str_replace('/static/', "/", $featured_image);
+                        } else {
+                            $featured_image = str_replace('/static/', '/', $featured_image);
+                        }
 
                         $file_content .= "featured_image = " . '"' . $featured_image . '"' . "\n";
                     }
-                    $file_content .= "type = " . '"' . $type. '"' . "\n";
+                    $file_content .= "type = " . '"' . $type . '"' . "\n";
 
                     //now append all metadata
-                    if(!$language || $language=='default'){
-                        $suffix=null;
-                    }else{
-                        $suffix="_$language";
+                    if (!$language || $language == 'default') {
+                        $suffix = null;
+                    } else {
+                        $suffix = "_$language";
                     }
-                    $frontmatter=$entry[FRONTMATTER];
-                    error_log("GENERATING AUTOFIELDS: skipping ".print_r($frontmatter,1));
+                    $frontmatter = $entry[FRONTMATTER];
+                    error_log("GENERATING AUTOFIELDS: skipping " . print_r($frontmatter, 1));
 
                     // now simply iterate over fields, an pick the one in the correct language
-                    foreach($fields as $field){
+                    foreach ($fields as $field) {
                         //skip fields already put in frontmatter
                         $fieldname = $field['name'];
-                        if ( $fieldname==FRONTMATTER || ( isset($frontmatter)  && in_array($fieldname, $frontmatter))) {
-                            error_log("Skipping field for frontmatter ".$fieldname);
+                        if ($fieldname == FRONTMATTER || (isset($frontmatter) && in_array($fieldname, $frontmatter))) {
+                            error_log("Skipping field for frontmatter " . $fieldname);
                             continue;
                         }
                         //now get field value, in entry
                         $value = '';
-                        if(!$field['localize'] || !$language || $language=='default'){
+                        if (!$field['localize'] || !$language || $language == 'default') {
                             //get plain name.. i.e.  'text' if not a localized field, or language is default
-                            if(key_exists($fieldname, $entry))
+                            if (key_exists($fieldname, $entry))
                                 $value = $entry[$fieldname];
-                        }else{
+                        } else {
                             //loog for field named 'text_en' for example
-                            if(key_exists($fieldname.'_'.$language, $entry))
-                                $value = $entry[$fieldname.'_'.$language];
+                            if (key_exists($fieldname . '_' . $language, $entry))
+                                $value = $entry[$fieldname . '_' . $language];
                         }
 
                         if (is_array($value)) { //image
-                            error_log("VALUE IS ARRAY:".print_r($value,1));
+                            error_log("VALUE IS ARRAY:" . print_r($value, 1));
                             $file_content .= $fieldname . ' = "' . $value['path'] . '"' . "\n";
 
                         } else {
                             $file_content .= $fieldname . ' =  ' . $this->normalizeTOMLValue($value) . "\n";
                         }
                     }
-
 
                     $file_content .= "+++\n\n$content";
 
@@ -231,9 +229,7 @@ class Admin extends \Cockpit\AuthController {
 
                     file_put_contents($file, $file_content);
                 }
-
-            endforeach;
-
+            }
         }
         $ret=array("status"=>"ok");
         return json_encode($ret);
