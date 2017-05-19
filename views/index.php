@@ -25,7 +25,7 @@
                 <div class="uk-width-1-3"><strong>@lang('Generating site for language ')</strong>:</div>
                 <div class="uk-width-2-3"><em>@lang('default')</em>
                     <span if="{languages.length>0}"> and </span>
-                    <em each="{language in languages}"> {language} </em>
+                    <em each="{language in languages}"> {language.label} </em>
                 </div>
             </div>
         </div>

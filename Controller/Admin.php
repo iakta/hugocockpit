@@ -10,6 +10,8 @@ class Admin extends \Cockpit\AuthController {
     //private $HUGO_DIR='/Users/walter/web/sites/hugo';
 
     public function index() {
+
+        cockpit('hugo')->createHugoSettings();
         return $this->render('hugo:views/index.php' );
     }
 
@@ -17,6 +19,8 @@ class Admin extends \Cockpit\AuthController {
     public function fields(){
         return $this->render('hugo:views/fields.php' );
     }
+
+
 
     public function settings($createsettings=false){
 
@@ -45,6 +49,8 @@ class Admin extends \Cockpit\AuthController {
         }
         $settingsexists = $file;
         $settings_cockpit_path =str_replace(COCKPIT_DIR == COCKPIT_DOCS_ROOT ? COCKPIT_DIR : dirname(COCKPIT_DIR).'/', '', $settingspath);
+        $settingsexists = $settings_cockpit_path;
+        error_log("SEttCP ".$settings_cockpit_path." SEXis".$settingsexists);
         return $this->render('hugo:views/settings.php', compact('settingsexists','settingspath','settings_cockpit_path') );
     }
 
