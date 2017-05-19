@@ -29,11 +29,11 @@ Click on it to start exporting your collections as Hugo content.
 
 ## Setup
 
-On the main Hugo plugin page, first go to Settings (right column, bottom) to set up a scaffold config file. 
-Then you will have to set manually the folder (must be on the same server) whereyou want the plugin to export the files (i.e. the main Hugo dir).
+On the main Hugo plugin page, first you have to set the **base Hugo dir**. At the moment you have to set manually the folder (must be on the same server) where you have installed Hugo (i.e. the parent dir of the folder where Hugo usually exports your files)
 
-This can also be done by hand editing a file named `config.yaml` in the root dir of this addon.
-The file at the moment contains many entries, but one in particular is essential:
+This can also be done by hand editing a file named `config.yaml` in the root dir of this addon, or via the **Settings file** button on the lower right hand corner.
+
+The file at the moment contains many entries, but this one in particular is needed for the plugin to run:
 
     # Cockpit-hugo config settings
     
