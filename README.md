@@ -1,7 +1,7 @@
 # Hugo Cockpit addon
 a Hugo addon for Cockpit CMS, allowing generating Hugo compatible content
 
-*version 0.3*
+*version 0.3.1*
 
 It is a simple addon that will generate content for every collection in a Cockpit NEXT CMS.
 
@@ -40,12 +40,19 @@ The file at the moment contains many entries, but this one in particular is need
     hugo_base_dir: /users/zontar/web/sites/hugo
 
 
-
-
 ## Features
 
-If Cockpit CMS is configured to use multiple languages, it will export multiple version of the pages under
-`content/default` and `content/LANG` where LANG is a two-letter ISO code such as 'en', 'fr', 'it' etc..
+If Cockpit CMS is configured to use multiple languages it will export multiple version of the pages under
+`content/default` and `content/LANG` where LANG is whatever you configure cockpit with. 
+So for example if you configure Cockpit with multilanguages (Cockpit/Settings/System settings) or edut `config/config.yaml` with
+    
+    # Cockpit settings
+    languages: 
+        en: "English"
+        frCA: "French (Canada)"
+    
+LANG will be "en" and "frCA" etc.. 
+Of course remember to have at least some fields configured as "Localize" while creating fields for a collection.
 
 Hugo entries in collections can be exported as plain Hugo files, or you can specify some fields as to translate
 to special Hugo fields, as will appear in the frontmatter.
