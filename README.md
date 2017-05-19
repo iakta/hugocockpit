@@ -13,7 +13,7 @@ The idea originated from Hugopit, a project to use Cockpit (the old version) as 
 
 ## Requirements
 
-* Cockpit CMS Next: https://github.com/aheinze/cockpit
+* Cockpit CMS Next: https://github.com/COCOPi/cockpit
 * Hugo: https://gohugo.io/   a fast static site generator
 
 ## Install 
