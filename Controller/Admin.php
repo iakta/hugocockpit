@@ -173,7 +173,7 @@ class Admin extends \Cockpit\AuthController {
                         } else {
                             $featured_image = str_replace('/static/', '/', $featured_image);
                         }
-
+                        array_push($entry[FRONTMATTER], 'featured_image');
                         $file_content .= "featured_image = " . '"' . $featured_image . '"' . "\n";
                     }
                     $file_content .= "type = " . '"' . $type . '"' . "\n";

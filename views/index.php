@@ -182,7 +182,7 @@
             }
             langs=['default'];
             this.languages.forEach(function(l){
-                langs.push(l);
+                langs.push(l.code);
             });
             App.request('/hugo/runHugo', { theme:this.themeName, languages:langs}).then(function(data){
                 if(data.status!='ok'){
