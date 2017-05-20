@@ -137,8 +137,9 @@ class Admin extends \Cockpit\AuthController {
                     $entry[FRONTMATTER] = array();
 
                     //title - look for a hugo field named title
-                    $title = $this->getHugoField($entry, $fields, $language, 'title');
-                    $slug = $this->getHugoField($entry, $fields, $language, 'slug');
+                    //if not localized, try default field
+                    $title = $this->getHugoField($entry, $fields, $language, 'title', true);
+                    $slug = $this->getHugoField($entry, $fields, $language, 'slug', true);
                     if (!$slug)
                         $slug = str_replace(' ', '_', $title);
 
@@ -164,7 +165,6 @@ class Admin extends \Cockpit\AuthController {
                         //adjust images.. subst /static/media with .. /en/media or /default/media
                         if (strpos($featured_image, '/') !== 0) {
                             $featured_image = '/' . $featured_image;
-
                         }
                         if ($language == 'default') {
                             $featured_image = str_replace('/static/', "/", $featured_image);
@@ -341,7 +341,7 @@ class Admin extends \Cockpit\AuthController {
         return substr($string, 0, strlen($string) - strlen($ending));
     }
 
-    private function getHugoField(&$entry, $fields, $language, $name){
+    private function getHugoField(&$entry, $fields, $language, $name, $take_default_if_missing=false){
         //look throught all the fields of the given entry
         //and look if one has the options.hugo.name == $name
         //if not, look for a field that has the name == $name
@@ -352,19 +352,25 @@ class Admin extends \Cockpit\AuthController {
             $suffix="_$language";
         }
 
-
         foreach ($fields as $field){
             if($field['options'] && $field['options']['hugo']){
                 if($field['options']['hugo']['name'] == $name){
                     if($suffix && $field['localize']){
                         //look for localized value
-                        array_push($entry[FRONTMATTER],$field['name'].$suffix);
-                        array_push($entry[FRONTMATTER],$field['name']);
-                        return $entry[$field['name'].$suffix];
+                        if(key_exists($field['name'].$suffix, $entry)) {
+                            array_push($entry[FRONTMATTER], $field['name'] . $suffix);
+                            array_push($entry[FRONTMATTER], $field['name']);
+                            return $entry[$field['name'] . $suffix];
+                        }
+                        if(!$take_default_if_missing)
+                            return null;
+                        // else execute following IF
                     }
-                    array_push($entry[FRONTMATTER],$field['name']);
-//                    error_log("***PUSHED".print_r($entry,1));
-                    return $entry[$field['name']];
+                    if(key_exists($field['name'], $entry)) {
+                        array_push($entry[FRONTMATTER], $field['name']);
+                        return $entry[$field['name']];
+                    }
+                    return null;
                 }
             }
         }
@@ -373,14 +379,21 @@ class Admin extends \Cockpit\AuthController {
             if($field['name']== $name){
                 if($suffix && $field['localize']){
                     //look for localized value
-                    array_push($entry[FRONTMATTER],$field['name'].$suffix);
-                    array_push($entry[FRONTMATTER],$field['name']);
-                    return $entry[$field['name'].$suffix];
+                    if(key_exists($field['name'].$suffix, $entry)) {
+                        array_push($entry[FRONTMATTER], $field['name'] . $suffix);
+                        array_push($entry[FRONTMATTER], $field['name']);
+                        return $entry[$field['name'] . $suffix];
+                    }
+                    if(!$take_default_if_missing)
+                        return null;
+                    // else execute following IF
                 }
-                array_push($entry[FRONTMATTER],$field['name']);
-                return $entry[$field['name']];
+                if(key_exists($field['name'], $entry)) {
+                    array_push($entry[FRONTMATTER], $field['name']);
+                    return $entry[$field['name']];
+                }
+                return null;
             }
-
         }
 
         return null;
@@ -399,28 +412,35 @@ class Admin extends \Cockpit\AuthController {
         foreach ($fields as $field){
             if($field['options'] && $field['options']['hugo']){
                 if($field['options']['hugo']['isfeatured'] == true){
-                    if($suffix && $field['localize']){
+                    if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
                         //look for localized value
                         array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                        array_push($entry[FRONTMATTER],$field['name']);
                         return $entry[$field['name'].$suffix]['path'];
                     }
-                    array_push($entry[FRONTMATTER],$field['name']);
-                    return $entry[$field['name']]['path'];
+                    if(key_exists($field['name'], $entry)) {
+                        array_push($entry[FRONTMATTER], $field['name']);
+                        return $entry[$field['name']]['path'];
+                    }
+                    return null;
                 }
             }
         }
         //if not found, look for field name
         foreach ($fields as $field){
             if($field['type']== 'image'){
-                if($suffix && $field['localize']){
+                if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
                     //look for localized value
                     array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                    array_push($entry[FRONTMATTER],$field['name']);
                     return $entry[$field['name'].$suffix]['path'];
                 }
-                array_push($entry[FRONTMATTER],$field['name']);
-                return $entry[$field['name']]['path'];
+                if(key_exists($field['name'], $entry)) {
+                    array_push($entry[FRONTMATTER], $field['name']);
+                    return $entry[$field['name']]['path'];
+                }
+                return null;
             }
-
         }
 
         return null;
