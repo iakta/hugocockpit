@@ -409,7 +409,7 @@ class Admin extends \Cockpit\AuthController {
         }
 
         foreach ($fields as $field){
-            if($field['options'] && $field['options']['hugo']){
+            if(isset($field['options']) && isset($field['options']['hugo'])){
                 if($field['options']['hugo']['name'] == $name){
                     if($suffix && $field['localize']){
                         //look for localized value
@@ -466,7 +466,7 @@ class Admin extends \Cockpit\AuthController {
             $suffix="_$language";
         }
         foreach ($fields as $field){
-            if($field['options'] && $field['options']['hugo']){
+            if(isset($field['options']) && isset($field['options']['hugo'])){
                 if($field['options']['hugo']['isfeatured'] == true){
                     if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
                         //look for localized value
