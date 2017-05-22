@@ -27,11 +27,17 @@
                 </div>
             </div>
         </div>
+        @if($app['user']['group']=='admin')
         <div class="uk-width-1-3">
             <a class="uk-button uk-button-large uk-width-1-1" href="@route('/hugo/fields')"><i class="uk-icon-plus-circle uk-icon-justify"></i>  @lang('Configure Hugo fields')</a>
             <br />
             <p>@lang('Each field in a collection can be mapped to a predefined Hugo field. You can set it here')</p>
         </div>
+        @else
+        <div class="uk-width-1-3">
+            <i>@lang("Mapping between Cockpit fields and special Hugo fields must be set by the site admin")</i>
+        </div>
+        @endif
     </div>
 
 
@@ -65,10 +71,17 @@
             <i>For the time being, this assumes also the <em>{hugo_script}</em> command is in the server's path or is an absolute value.</i><br />
 
         </div>
+        @if($app['user']['group']=='admin')
         <div class="uk-width-1-3">
             <a class="uk-button uk-button-large uk-width-1-1" href="@route('/hugo/settings')"><i class="uk-icon-gears uk-icon-justify"></i>  @lang('Settings file')</a><br />
             <p> Every value used to run Hugo can be set in the Hugo plugin settings file with this button</p>
         </div>
+        @else
+        <div class="uk-width-1-3">
+            <a class="uk-button uk-button-large uk-width-1-1" href="@route('/hugo/settings/read')"><i class="uk-icon-gears uk-icon-justify"></i>  @lang('View settings file')</a><br />
+            <i><p>@lang("Hugo settings can be directly set only by the site admin")</p></i>
+        </div>
+        @endif
     </div>
     <div class="uk-grid">
         <div class="uk-width-2-3">
@@ -101,7 +114,6 @@
         this.hugoDir='';
         this.themeName='';
         this.languages    = App.$data.languages;
-
         this.on('mount', function() {
 
             App.callmodule('collections:collections', true).then(function(data) {

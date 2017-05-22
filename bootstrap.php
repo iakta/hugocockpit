@@ -15,9 +15,12 @@ define('HUGO_CONFIG_SAMPLE',"
 hugo_script: hugo
 hugo_conf_prefix: config
 hugo_conf_extension: toml
+cockpit_storage_prefix: 
+hugo_extra_params: --cleanDestinationDir
 ");
 
 define('HUGO_THEMES_SUBDIR','themes');
+define('COCKPIT_STORAGE_PREFIX', 'cockpit_storage_prefix');
 
 $this->module("hugo")->extend([
 
@@ -104,6 +107,12 @@ $this->module("hugo")->extend([
         }
 
         return $themes;
+    },
+    'getCockpitStoragePrefix' => function(){
+        $s =cockpit('hugo')->getHugoSettings();
+        if(key_exists(COCKPIT_STORAGE_PREFIX, $s))
+            return $s[COCKPIT_STORAGE_PREFIX];
+        return null;
     }
 
 ]);

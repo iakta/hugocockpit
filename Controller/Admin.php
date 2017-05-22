@@ -24,7 +24,20 @@ class Admin extends \Cockpit\AuthController {
 
     public function settings($createsettings=false){
 
-        error_log("SETTINGS, create=$createsettings");
+        $group = $this->app->module('cockpit')->getGroup();
+        error_log("SETTINGS, create=$createsettings group=$group");
+
+        //this will create ONLY if it does not exists already
+        cockpit('hugo')->createHugoSettings();
+
+        if($group!= 'admin'){
+
+            $file = $this->app->path(COCKPIT_HUGO_CONFIG_PATH);
+            $settings_content = file_get_contents($file);
+            return $this->render('hugo:views/settings.php', compact('settings_content'));
+        }
+
+
         if($createsettings == 'create'){
             //create file
             cockpit('hugo')->createHugoSettings();
@@ -102,6 +115,31 @@ class Admin extends \Cockpit\AuthController {
             error_log("BASE DIR " . print_r($BASE_DIR, 1));
             //now iterate over every item in every language
 
+            //now clean up dir before doing anything
+            foreach ($languages as $language) {
+                if ($hasLanguages) {
+                    $output_dir = $BASE_DIR . "/content/$language/$collectionName";
+                    if (!is_dir("$BASE_DIR/content/$language")) {
+                        mkdir("$BASE_DIR/content/$language");
+                        continue;
+                    }
+                } else {
+                    $language = null; //not used
+                    $output_dir = $BASE_DIR . "/content/$collectionName";
+                }
+                //create Section dir
+                if (!is_dir($output_dir)) {
+                    mkdir($output_dir);
+                    continue;
+                }
+
+                $files = glob("$output_dir/*"); // get all file names
+                foreach ($files as $file) { // iterate files
+                    if (is_file($file))
+                        unlink($file); // delete file
+                }
+            }
+
             $count = 0;
             foreach ($entries as $entry){
                 $count++;
@@ -111,15 +149,9 @@ class Admin extends \Cockpit\AuthController {
                     error_log("LANGUAGE1 $language for entry " . print_r($entry, 1));
                     if ($hasLanguages) {
                         $output_dir = $BASE_DIR . "/content/$language/$collectionName";
-                        if (!is_dir("$BASE_DIR/content/$language"))
-                            mkdir("$BASE_DIR/content/$language");
                     } else {
                         $language = null; //not used
                         $output_dir = $BASE_DIR . "/content/$collectionName";
-                    }
-                    //create Section dir
-                    if (!is_dir($output_dir)) {
-                        mkdir($output_dir);
                     }
 
                     //auto generated dates
@@ -163,15 +195,35 @@ class Admin extends \Cockpit\AuthController {
                         $file_content .= "slug = " . $this->normalizeTOMLValue($slug) . "\n";
                     if ($featured_image) {
                         //adjust images.. subst /static/media with .. /en/media or /default/media
+                        // for example i have images in
+                        //  COCKPIT: /storage/hugo/media/image.jpg
+                        // and I'd like to end up with
+                        //  HUGO MD: /media/image.jpg
+                        // define('COCKPIT_STORAGE_PREFIX', 'cockpit_storage_prefix');
+
+
                         if (strpos($featured_image, '/') !== 0) {
                             $featured_image = '/' . $featured_image;
                         }
-                        if ($language == 'default') {
-                            $featured_image = str_replace('/static/', "/", $featured_image);
-                        } elseif ($language) {
-                            $featured_image = str_replace('/static/', "/", $featured_image);
-                        } else {
-                            $featured_image = str_replace('/static/', '/', $featured_image);
+
+                        $cockpit_storage_prefix = cockpit('hugo')->getCockpitStoragePrefix();
+                        if($cockpit_storage_prefix) {
+                            if(substr($cockpit_storage_prefix,-1) != '/'){
+                                $cockpit_storage_prefix = $cockpit_storage_prefix.'/';
+                            }
+                            if(substr($cockpit_storage_prefix,0,1) != '/'){
+                                $cockpit_storage_prefix = '/'. $cockpit_storage_prefix;
+                            }
+                            error_log("CSP: $cockpit_storage_prefix");
+                            $featured_image = str_replace($cockpit_storage_prefix, "/", $featured_image);
+                        }else {
+                            if ($language == 'default') {
+                                $featured_image = str_replace('/static/', "/", $featured_image);
+                            } elseif ($language) {
+                                $featured_image = str_replace('/static/', "/", $featured_image);
+                            } else {
+                                $featured_image = str_replace('/static/', '/', $featured_image);
+                            }
                         }
                         array_push($entry[FRONTMATTER], 'featured_image');
                         $file_content .= "featured_image = " . '"' . $featured_image . '"' . "\n";
@@ -269,10 +321,14 @@ class Admin extends \Cockpit\AuthController {
             $hugo_config_prefix= cockpit('hugo')->getHugoSetting('hugo_conf_prefix');
             $hugo_config_extension= cockpit('hugo')->getHugoSetting('hugo_conf_extension');
 
+            $hugo_extra_params=cockpit('hugo')->getHugoSetting('hugo_extra_params');
+            if(!$hugo_extra_params)
+                $hugo_extra_params = "";
+
             #build config file name
             $conf_filename="$hugo_config_prefix$ext.$hugo_config_extension";
 
-            $command = "cd $BASE_DIR ;$hugo_script -t $theme --config=\"$BASE_DIR/$conf_filename\"";
+            $command = "cd $BASE_DIR ;$hugo_script -t $theme $hugo_extra_params --config=\"$BASE_DIR/$conf_filename\"";
             error_log("Running $command");
 
             #now issue command

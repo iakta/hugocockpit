@@ -5,6 +5,9 @@
     </ul>
 </div>
 
+
+@if($app['user']['group']=='admin')
+
 <div class="uk-margin-top" riot-view>
 
     @if ($settingsexists)
@@ -24,10 +27,23 @@
     @endif
 
 </div>
+@else
+<div class="uk-margin-top" riot-view>
+    <p>@lang('Settings file can only be edited by site admin')</p>
+    <div>
+        <pre>{{ $settings_content }}
+        </pre>
+    </div>
+</div>
+@endif
+
 <script type="view/script">
 
         var $this = this;
+        this.mixin(RiotBindMixin);
 
+        var $this = this;
+        console.log("Cazz");
 </script>
 
 <style>
