@@ -38,7 +38,52 @@ The file at the moment contains many entries, but this one in particular is need
     # Cockpit-hugo config settings
     
     hugo_base_dir: /users/zontar/web/sites/hugo
+    
+and this one is needed for images to work correctly. Please use any path under `storage`, just take note of it.    
+    
+    cockpit_storage_prefix: /storage/hugo
 
+Please see the config section below for the exact meeting
+
+## Configuration
+
+Hugo need some Cockpit configuration to run: in particular it is best to create a group, and a user, that will be the editor of the site, without all the privileges of the admin user.
+
+So, go to `Cockpit menu / System settings / Settings` and add these lines to the config.yaml file 
+  
+    # Cockpit settings 
+    
+    # admin specific
+    groups:
+        author:
+            $admin: true
+            $vars:
+                finder.path: "storage/hugo/media"
+            cockpit:
+                 backend: true
+                 finder: true
+                 setting: true 
+                 
+This will create a new group `author` (or whatever name) with some privileges, and most importantly, will set a `finder.path`. This can be whatever you want, under the `cockpit_storage_prefix` direcotry as set in the hugo config file. 
+
+Then create a user belonging to the newly create group, and give it to the editors, or use it to login in Cockpti to edit the site for Hugo.
+
+### Images
+
+Back in Cockpit, open up the Finder and create the dirs and subdirs as needed under `storage`. 
+
+### Multilanguage
+
+Then if you want to have multilanguage support, go to `Cockpit menu / System settings / Settings` add these lines to the config.yaml file
+
+    # Cockpit settings
+    # multilanguage s
+    languages:
+       en: "English"
+       fr: "French"
+       
+Or whatever dictionary you want to have. The key (in this example "en" and "fr" will be the names of the subdirectories created by the Hugo plugin under the publishing directory.
+   
 
 ## Features
 
@@ -72,3 +117,34 @@ You can also specify a `featured_image` if you have more than one image in the c
 Of course, you can specify also standard hugo frontmatter names, they will be translated. Some names have special meaning for the plugin:  At the moment recognized frontmatter special fields are `title`, `slug` (the name of the generated .md file), `date`, `publishdate` and of course the content: `content`.
 
 These values will be stored in the JSON parameter of the Hugo field, under the `hugo` keyword.
+
+## Work with Hugo
+
+The first thing you need to do is to log in in Cockpit as `admin` and setup everything that will be needed by the `Hugo` user:
+
+1. create new group and user as explained above
+1. create media/image subdir of `storage` folder via finder
+1. configure hugo settings file from the Hugo page with the `cockpit_storage_path`
+1. set via gui or file, the `hugo_script` key
+1. create a Cockpit collection in the usual way
+1. map Cockpit fields of the collection to special hugo ones. At least ensure there is a `title` field and a `content` field (or a field with any name, but with the hugo mapping to `title` or `content`)
+
+Please note that the `author` user won't be able to edit the Hugo settings, since it will be outside of its finder base path. Only root user can edit it, and it also make sense.
+
+## Images
+
+Remember: to have images work correctly, log in in Hugo with the user of group `author`, and upload images and select them accordingly. When translating to Hugo, the path will be set correctly. It won't work using the `Admin` user  
+
+## Configuration
+
+These are the configuration keys of the Hugo addon, as used in the `config.yaml` file
+
+|key|default|use|
+---|---|---
+`hugo_script`|hugo|path to the hugo binary
+`hugo_conf_prefix`|  config | base name of hugo config file
+`hugo_conf_extension`|  toml | extension of hugo config file
+`hugo_base_dir`| | full path of base Hugo installation dir, where content, config and public dir resides
+`hugo_theme`| | theme used to generate Hugo site
+`cockpit_storage_prefix`| /storage/hugo | prefix of Hugo specific subdir of the root finder
+`hugo_extra_params`| --cleanDestinationDir | any parameter you want to be passed to hugo while generating a site
