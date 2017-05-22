@@ -91,7 +91,7 @@ class Admin extends \Cockpit\AuthController {
         error_log("Languages? $hasLanguages Hardwired ".print_r($language_extensions,1));
 
         if(!$languages || count($languages)==0 || !$hasLanguages){
-            $languages= 'default';
+            $languages= array('default');
         }
 
         error_log("GENERATING SITE FOR THESE LANGUAGES ".print_r($languages,1));
