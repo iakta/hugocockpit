@@ -148,3 +148,12 @@ These are the configuration keys of the Hugo addon, as used in the `config.yaml`
 `hugo_theme`| | theme used to generate Hugo site
 `cockpit_storage_prefix`| /storage/hugo | prefix of Hugo specific subdir of the root finder
 `hugo_extra_params`| --cleanDestinationDir | any parameter you want to be passed to hugo while generating a site
+
+
+## Common problems
+
+Most problems are due to write permissions. Please ensure that the folder (and subfolders) where Hugo will run and put output files, can be written by the user that runs your web server.
+
+`chown -R www-data:www-data /var/www/hugo_installation/public/default`
+
+A command like that (change paths and users according to your setup) should be enough in most cases. 
