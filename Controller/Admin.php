@@ -343,6 +343,9 @@ class Admin extends \Cockpit\AuthController {
                 }
             }
             if($cmd_out || $error){
+                error_log("CMD OUT .$cmd_out.");
+                error_log("ERROR .$error.");
+
                 error_log("Returning error $cmd_out, $error".print_r($ret,1)." -- ".print_r($ret_lines,1 ));
                 $ret=array("status"=>"error","error"=>($error? $error : $ret));
 //                $this->app->response->status=500;
