@@ -1,7 +1,7 @@
 # Hugo Cockpit addon
 a Hugo addon for Cockpit CMS, allowing generating Hugo compatible content
 
-*version 0.3.1*
+*version 0.3.5*
 
 It is a simple addon that will generate content for every collection in a Cockpit NEXT CMS.
 
@@ -16,6 +16,8 @@ The idea originated from Hugopit, a project to use Cockpit (the old version) as 
 * Cockpit CMS Next: https://github.com/COCOPi/cockpit
 * Hugo: https://gohugo.io/   a fast static site generator
 
+They both need to be installed on the same file system.
+
 ## Install 
 
 Simply copy the downloaded folder tree under the base directory of your Cockpit installation, in the addons subdir, like this:
@@ -23,13 +25,20 @@ Simply copy the downloaded folder tree under the base directory of your Cockpit 
 
 IMPORTANT: if cloning from git, remember to rename the dir `hugocockpit` to `Hugo` (with capital `H`). 
 
-Upon reloading Cockpit CMS you should find another menu named Hugo (the newspaper icon). 
-Click on it to start exporting your collections as Hugo content.
+Upon reloading Cockpit CMS you should find another menu named Hugo (the H in the hexagon icon). 
+The first time it will launch an automatic Installer. Please fill in the required data (basically the only required data is the directory where Hugo is installed on the machine where Cockpit is running).
+At the end the installer will modify Cockpit settings, Hugo settings and write this plugin settings too..
+Then just create a new user belonging to the group specified in the installer, and log in in Cockpit with this user it to fill in the entries/pages and to use the Hugo Plugin.
 
+Once the Installation is done, the Hugo icon will bring you to the normal hugo plugin page. 
+
+## Plugin with multiple hugo installations?
+Should work with multiple Hugo repositories, provided you change and set different hugo base dir each time.. Interesting idea for a future enhancements.
 
 ## Setup
 
-On the main Hugo plugin page, first you have to set the **base Hugo dir**. At the moment you have to set manually the folder (must be on the same server) where you have installed Hugo (i.e. the parent dir of the folder where Hugo usually exports your files)
+On the main Hugo plugin page, first you have to set the **base Hugo dir** (if using the installer, this will be already set).
+At the moment you have to set manually the folder (must be on the same server) where you have installed Hugo (i.e. the parent dir of the folder where Hugo usually exports your files)
 
 This can also be done by hand editing a file named `config.yaml` in the root dir of this addon, or via the **Settings file** button on the lower right hand corner.
 
