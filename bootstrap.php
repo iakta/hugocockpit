@@ -6,9 +6,11 @@
  * Time: 22:02
  */
 if (!defined('COCKPIT_HUGO_CONFIG_PATH')) {
-    $_configpath = __DIR__.'/config.yaml';
+    $_configpath = __DIR__ . '/config.yaml';
     define('COCKPIT_HUGO_CONFIG_PATH', $_configpath);
 }
+
+
 define('HUGO_BASE_DIR_KEY','hugo_base_dir');
 define('HUGO_CONFIG_INTRO',"# Cockpit-hugo config settings");
 define('HUGO_CONFIG_SAMPLE',"
@@ -84,7 +86,7 @@ $this->module("hugo")->extend([
         fclose($myfile);
     },
     'isDir' => function($path){
-         error_log("IS DIR $path   " );
+//         error_log("IS DIR $path   " );
         return is_dir($path);
     },
     'getHugoThemes' => function(){
@@ -114,7 +116,6 @@ $this->module("hugo")->extend([
             return $s[COCKPIT_STORAGE_PREFIX];
         return null;
     }
-
 ]);
 
 // REST
@@ -126,7 +127,10 @@ if (COCKPIT_REST) {
 }
 
 // ADMIN
-if (COCKPIT_ADMIN && !COCKPIT_REST) {
+if(COCKPIT_ADMIN &&!COCKPIT_REST && !file_exists(COCKPIT_HUGO_CONFIG_PATH)){
+
+    include_once (__DIR__.'/install.php');
+}elseif (COCKPIT_ADMIN && !COCKPIT_REST) {
 
     include_once(__DIR__.'/admin.php');
 }

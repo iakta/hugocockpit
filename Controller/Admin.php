@@ -21,7 +21,6 @@ class Admin extends \Cockpit\AuthController {
     }
 
 
-
     public function settings($createsettings=false){
 
         $group = $this->app->module('cockpit')->getGroup();
@@ -36,7 +35,6 @@ class Admin extends \Cockpit\AuthController {
             $settings_content = file_get_contents($file);
             return $this->render('hugo:views/settings.php', compact('settings_content'));
         }
-
 
         if($createsettings == 'create'){
             //create file

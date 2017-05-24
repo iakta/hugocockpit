@@ -135,6 +135,12 @@ Please note that the `author` user won't be able to edit the Hugo settings, sinc
 
 Remember: to have images work correctly, log in in Hugo with the user of group `author`, and upload images and select them accordingly. When translating to Hugo, the path will be set correctly. It won't work using the `Admin` user  
 
+Also, you have to configure your Hugo config to use a different static dir, in mine I use
+
+    staticdir = "cockpit/storage/hugo"
+    
+ So it will copy over the static images as used by cockpit when building the Hugo site.
+
 ## Configuration
 
 These are the configuration keys of the Hugo addon, as used in the `config.yaml` file

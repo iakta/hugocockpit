@@ -20,7 +20,7 @@ $app->on('admin.init', function() {
     // add to modules menu
     $this('admin')->addMenuItem('modules', [
         'label' => 'Hugo',
-        'icon'  => 'newspaper-o',
+        'icon'  => 'hugo:icon.svg',
         'route' => '/hugo',
         'active' => strpos($this['route'], '/hugo') === 0
     ]);
@@ -35,7 +35,7 @@ $app->on('admin.init', function() {
             if (stripos($collection, $search)!==false || stripos($meta['label'], $search)!==false) {
 
                 $list[] = [
-                    'icon'  => 'newspaper-o',
+                    'icon'  => 'hugo:icon.svg',
                     'title' => $meta['label'] ? $meta['label'] : $meta['name'],
                     'url'   => $this->routeUrl('/hugo/admin/')
                 ];
