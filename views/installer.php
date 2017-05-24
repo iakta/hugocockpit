@@ -58,7 +58,7 @@
             @lang('It must contain some HUGO related dir and at least one <i>config.toml | json | yaml</i>. This config file is needed by the plugin')</p>
             <div class="uk-grid-small uk-grid" uk-grid>
                  <div class="uk-width-1-2">
-                     <cp-dirselect path="/Users/walter/web/sites/hugo"/>
+                     <cp-dirselect path="/"/>
 
                  </div>
                 <div class="uk-width-1-2">
