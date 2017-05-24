@@ -43,7 +43,8 @@ $this->module("hugo")->extend([
         # read from YAML
         if(file_exists(COCKPIT_HUGO_CONFIG_PATH)){
             $customconfig =   Spyc::YAMLLoad(COCKPIT_HUGO_CONFIG_PATH);
-            $value=$customconfig[$key];
+            if(isset($customconfig[$key]))
+                $value=$customconfig[$key];
         }
         return   $value;//json_encode($ret);
     },
