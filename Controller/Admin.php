@@ -197,7 +197,7 @@ class Admin extends \Cockpit\AuthController {
                         //  COCKPIT: /storage/hugo/media/image.jpg
                         // and I'd like to end up with
                         //  HUGO MD: /media/image.jpg
-                        // define('COCKPIT_STORAGE_PREFIX', 'cockpit_storage_prefix');
+                        // define('COCKPIT_STORAGE_PREFIX_KEY', 'cockpit_storage_prefix');
 
 
                         if (strpos($featured_image, '/') !== 0) {
