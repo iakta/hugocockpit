@@ -47,6 +47,12 @@ class Installer extends \Cockpit\AuthController {
         //cockpit('hugo')->createHugoSettings();
         //read cockpit settings..
         $configexists =  COCKPIT_CONFIG_PATH ;
+        if (!file_exists(COCKPIT_CONFIG_PATH)){
+            //now write file
+            $myfile = fopen(COCKPIT_CONFIG_PATH, "w") or die("Unable to open file!");
+            fwrite($myfile, INSTALL_COCKPIT_SETTINGS_COMMENT."\n");
+            fclose($myfile);
+        }
         $settings_content = file_get_contents($configexists);
         $groups    = $this->app->module('cockpit')->getGroups();
         $default_group_name = INSTALL_GROUP_NAME;
