@@ -48,6 +48,11 @@ class Installer extends \Cockpit\AuthController {
         //read cockpit settings..
         $configexists =  COCKPIT_CONFIG_PATH ;
         if (!file_exists(COCKPIT_CONFIG_PATH)){
+            //try to create cockpit dir..
+            $dir = dirname(COCKPIT_CONFIG_PATH);
+            if(!file_exists($dir)){
+                mkdir($dir);
+            }
             //now write file
             $myfile = fopen(COCKPIT_CONFIG_PATH, "w") or die("Unable to open file!");
             fwrite($myfile, INSTALL_COCKPIT_SETTINGS_COMMENT."\n");
