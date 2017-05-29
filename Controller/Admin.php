@@ -326,7 +326,16 @@ class Admin extends \Cockpit\AuthController {
             #build config file name
             $conf_filename="$hugo_config_prefix$ext.$hugo_config_extension";
 
-            $command = "cd $BASE_DIR ;$hugo_script -t $theme $hugo_extra_params --config=\"$BASE_DIR/$conf_filename\"";
+            # build absolute config file path
+            $hugo_config_file = "$BASE_DIR/$conf_filename";
+            if(!file_exists($hugo_config_file)){
+                $error = "Cannot fine hugo config file $hugo_config_file for language $lang";
+                error_log($error);
+                $ret=array("status"=>"error","error"=>$error);
+                return json_encode($ret);
+            }
+
+            $command = "cd $BASE_DIR ;$hugo_script -t $theme $hugo_extra_params --config=\"$hugo_config_file\"";
             error_log("Running $command");
 
             #now issue command
