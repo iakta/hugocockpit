@@ -377,6 +377,9 @@ class Admin extends \Cockpit\AuthController {
         if(strpos($value,"\n")){
             return '"""'.$value.'"""';
         }
+        //escape?
+        $value=str_replace('"','\"',$value);
+
         return '"'.$value.'"';
     }
 
