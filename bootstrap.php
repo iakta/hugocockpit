@@ -104,19 +104,19 @@ $this->module("hugo")->extend([
     }
 ]);
 
-// REST
-if (COCKPIT_REST) {
-
-    $app->on('cockpit.rest.init', function($routes) {
-        $routes['hugo'] = 'Hugo\\Controller\\RestApi';
-    });
-}
+//// REST
+//if (COCKPIT_REST) {
+//
+//    $app->on('cockpit.rest.init', function($routes) {
+//        $routes['hugo'] = 'Hugo\\Controller\\RestApi';
+//    });
+//}
 
 // ADMIN
-if(COCKPIT_ADMIN &&!COCKPIT_REST && !file_exists(COCKPIT_HUGO_CONFIG_PATH)){
+if(COCKPIT_ADMIN /* &&!COCKPIT_REST */ && !file_exists(COCKPIT_HUGO_CONFIG_PATH)){
 
     include_once (__DIR__.'/install.php');
-}elseif (COCKPIT_ADMIN && !COCKPIT_REST) {
+}elseif (COCKPIT_ADMIN /* && !COCKPIT_REST */) {
 
     include_once(__DIR__.'/admin.php');
 }
