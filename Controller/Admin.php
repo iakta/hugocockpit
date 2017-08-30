@@ -289,10 +289,14 @@ class Admin extends \Cockpit\AuthController {
 
         $theme = $this->param('theme');
         $languages = $this->param('languages');
+        $env = $this->param('env'); //can be 'prod' or 'staging'
+        if(!$env){
+            $env = 'prod';
+        }
 
         //this flag forces HUGO to behae in a multilanguage way even if only one langauge is passed, maybe we want
         //to regenerate just one language?
-        error_log("RUNNING HUGO!".print_r($theme,1));
+        error_log("RUNNING HUGO! theme $theme and env $env");
 
         //read from Lime config
         $language_extensions=$this->app->retrieve("languages", null);
@@ -333,6 +337,20 @@ class Admin extends \Cockpit\AuthController {
                 error_log($error);
                 $ret=array("status"=>"error","error"=>$error);
                 return json_encode($ret);
+            }
+
+            if($env == 'staging'){
+                //read Hugo config file..
+                $staging_dir = readKeyFromHugoConfig($hugo_config_file,HUGO_STAGING_DIR_KEY);
+                $staging_url = readKeyFromHugoConfig($hugo_config_file, HUGO_STAGING_URL_KEY);
+                if($staging_dir && $staging_url) {
+                    $hugo_extra_params .= " --destination=\"$staging_dir\" --baseURL \"$staging_url\" ";
+                    error_log("Extra params [$hugo_extra_params]");
+                }else{
+                    error_log("Missing key ".HUGO_STAGING_DIR_KEY." and/or ".
+                        HUGO_STAGING_URL_KEY." in hugo config file $hugo_config_file");
+                    error_log("SD $staging_dir SU $staging_url");
+                }
             }
 
             $command = "cd $BASE_DIR ;$hugo_script -t $theme $hugo_extra_params --config=\"$hugo_config_file\"";
@@ -489,7 +507,10 @@ class Admin extends \Cockpit\AuthController {
                     }
                     if(key_exists($field['name'], $entry)) {
                         array_push($entry[FRONTMATTER], $field['name']);
-                        return $entry[$field['name']]['path'];
+//                        error_log("Entry di ".$field['name'].' = '.print_r($entry[$field['name']],1));
+                        if(is_array($entry[$field['name']]) && key_exists('path', $entry[$field['name']]))
+                            return $entry[$field['name']]['path'];
+                        return null;
                     }
                     return null;
                 }
@@ -528,5 +549,51 @@ class Admin extends \Cockpit\AuthController {
         $entries = $this->module('hugo')->find($collection['name']);
 
         return json_encode($entries, JSON_PRETTY_PRINT);
+    }
+}
+
+
+function readKeyFromHugoConfig($hugoconfig, $param){
+    if( preg_match('/\.yaml$/', $hugoconfig)){
+        $config= spyc_load_file($hugoconfig);
+        return $config[$param];
+    }elseif (preg_match('/\.toml/', $hugoconfig)){
+        //$config = Toml::parseFile($config_file);
+        $tomlStr = file_get_contents($hugoconfig);
+        //now parse line per line..
+        //look for 'staticDir' or 'staticdir'
+        $handle = fopen($hugoconfig, "r");
+        $lines = array();
+        $index = -1;
+        $found=0;
+        $match=null;
+        while (($line = fgets($handle)) !== false) {
+            // process the line read.
+            if(preg_match("/^\\s*$param \s*=\s*/i", $line)){
+                //modify..
+                $match = $line;
+                $found = 1;
+                break;
+            }
+        }
+        fclose($handle);
+
+        if(!$found){
+            //insert in array
+            return null;
+        }
+        $p = explode("=", $match);
+        if(count($p)==2){
+            $v = $p[1];
+            $v = trim($v, " \t\"\'\n");
+            return $v;
+        }
+
+        return null;
+
+    }elseif (preg_match('/\.json/', $hugoconfig)){
+        $jsonStr = file_get_contents($hugoconfig);
+        $config=json_decode($jsonStr);
+        return $config[$param];
     }
 }

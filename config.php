@@ -46,9 +46,22 @@ hugo_conf_prefix: ".HUGO_CONFIG_PREFIX."
 hugo_extra_params: --cleanDestinationDir
 ");
 
+//--------------------------------------------------------------------
+// used for staging configuration
+
+//key in HUGO config file for staging dir
+define('HUGO_STAGING_DIR_KEY','stagingdir');
+//key in HUGO config file for staging URL
+define('HUGO_STAGING_URL_KEY','stagingURL');
+
+
+
+//--------------------------------------------------------------------
+// used to make this plugin work
 
 //by default, search this dir for themes in Hugo
 define('HUGO_THEMES_SUBDIR','themes');
+
 
 //path of the main config file for this plugin to work
 if (!defined('COCKPIT_HUGO_CONFIG_PATH')) {

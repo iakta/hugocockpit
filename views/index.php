@@ -98,7 +98,13 @@
 
         </div>
         <div class="uk-width-1-3">
+	        <span if="{!hasStaging}">
             <button class="uk-button uk-button-large uk-button-primary " disabled="{ !hugoDir || !themeName}" type="button" onclick="{ runHugo }"><i class="uk-icon-justify uk-icon-arrow-down"></i>@lang('Run Hugo')</button>
+	        </span>
+	        <span if="{hasStaging}">
+	        <button class="uk-button uk-button-large uk-button-primary " disabled="{ !hugoDir || !themeName}" type="button" onclick="{ runHugoStaging }"><i class="uk-icon-justify uk-icon-arrow-down"></i>@lang('Run Hugo Staging')</button>
+	        <button class="uk-button uk-button-large uk-button-primary " disabled="{ !hugoDir || !themeName}" type="button" onclick="{ runHugo }"><i class="uk-icon-justify uk-icon-arrow-down"></i>@lang('Run Hugo Prod')</button>
+	        </span>
         </div>
     </div>
 
@@ -112,6 +118,7 @@
         this.collections = [];
         this.oneSelected=false;
         this.hugoDir='';
+        this.hasStaging=true;
         this.themeName='';
         this.languages    = App.$data.languages;
         this.on('mount', function() {
@@ -140,9 +147,11 @@
                 this.hugo_conf_extension=data.result['hugo_conf_extension'];
                 this.hugo_conf_prefix=data.result['hugo_conf_prefix'];
                 this.hugo_script=data.result['hugo_script'];
+                this.hasStaging=data.result['has_staging'] || false;
+
 
                 this.update();
-                console.log("HUGO THEME",this.themeName);
+                console.log("HUGO THEME",this.themeName,"staging",this.hasStaging);
                  this.trigger('abc');
             }.bind(this));
         });
@@ -187,16 +196,18 @@
             });
         }
 
-        runHugo(){
+        runHugo(evt, env){
+            var env = env || "prod";
             //check
             if(!this.hugoDir || ! this.themeName){
                 console.error("Error, o theme or hugo dir");
             }
+            console.log("Running hugo ",env);
             langs=['default'];
             this.languages.forEach(function(l){
                 langs.push(l.code);
             });
-            App.request('/hugo/runHugo', { theme:this.themeName, languages:langs}).then(function(data){
+            App.request('/hugo/runHugo', { theme:this.themeName, languages:langs, env:env}).then(function(data){
                 if(data.status!='ok'){
                     //error
                     App.ui.notify("Error running hugo:\n"+data.error, "error");
@@ -208,6 +219,10 @@
                 App.ui.notify("Error running hugo", "error");
                 console.log("Generate error",err);
             });
+        }
+
+        runHugoStaging(evt){
+            this.runHugo(evt, "staging");
         }
 
         test(){
