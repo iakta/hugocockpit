@@ -70,6 +70,16 @@
             <br />
             <i>For the time being, this assumes also the <em>{hugo_script}</em> command is in the server's path or is an absolute value.</i><br />
 
+	        <span if="hasStaging">
+		        <br />
+		        <strong>Staging</strong>: to use staging feature, add the following key to every Hugo confi gile:
+		        <ul>
+		            <li><em>stagingdir</em> contains server dir where to put staging files</li>
+			        <li><em>stagingURL</em> contains staging URL</li>
+		        </ul>
+		        Remember to prepend <em>\{\{baseURL\}\}</em> to every URL/image path/etc in your theme files
+	        </span>
+
         </div>
         @if($app['user']['group']=='admin')
         <div class="uk-width-1-3">
