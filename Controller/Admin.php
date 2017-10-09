@@ -175,12 +175,23 @@ class Admin extends \Cockpit\AuthController {
 
                     $content = $this->getHugoField($entry, $fields, $language, 'content');
                     $featured_image = $this->getHugoFeaturedImage($entry, $fields, $language);
-                    error_log("Found title $title, slug $slug     ");
+                    error_log("Found title $title, slug $slug    ");
 
                     //post fields
                     $publishdate = date('c');
 
                     $type = $collectionName;
+                    $cockpit_storage_prefix = cockpit('hugo')->getCockpitStoragePrefix();
+                    error_log("cockpit_storage_prefix = $cockpit_storage_prefix");
+                    if($cockpit_storage_prefix) {
+                        if (substr($cockpit_storage_prefix, -1) != '/') {
+                            $cockpit_storage_prefix = $cockpit_storage_prefix . '/';
+                        }
+                        if (substr($cockpit_storage_prefix, 0, 1) != '/') {
+                            $cockpit_storage_prefix = '/' . $cockpit_storage_prefix;
+                        }
+                        error_log("CSP: $cockpit_storage_prefix");
+                    }
 
                     $file_content = "+++\n";
                     if ($created_at)
@@ -199,32 +210,25 @@ class Admin extends \Cockpit\AuthController {
                         //  HUGO MD: /media/image.jpg
                         // define('COCKPIT_STORAGE_PREFIX_KEY', 'cockpit_storage_prefix');
 
-
                         if (strpos($featured_image, '/') !== 0) {
                             $featured_image = '/' . $featured_image;
                         }
 
-                        $cockpit_storage_prefix = cockpit('hugo')->getCockpitStoragePrefix();
                         if($cockpit_storage_prefix) {
-                            if(substr($cockpit_storage_prefix,-1) != '/'){
-                                $cockpit_storage_prefix = $cockpit_storage_prefix.'/';
-                            }
-                            if(substr($cockpit_storage_prefix,0,1) != '/'){
-                                $cockpit_storage_prefix = '/'. $cockpit_storage_prefix;
-                            }
-                            error_log("CSP: $cockpit_storage_prefix");
                             $featured_image = str_replace($cockpit_storage_prefix, "/", $featured_image);
                         }else {
-                            if ($language == 'default') {
-                                $featured_image = str_replace('/static/', "/", $featured_image);
-                            } elseif ($language) {
-                                $featured_image = str_replace('/static/', "/", $featured_image);
-                            } else {
-                                $featured_image = str_replace('/static/', '/', $featured_image);
-                            }
+                            $featured_image = str_replace('/static/', '/', $featured_image);
                         }
                         array_push($entry[FRONTMATTER], 'featured_image');
                         $file_content .= "featured_image = " . '"' . $featured_image . '"' . "\n";
+                    }
+                    if($content){
+                        if($cockpit_storage_prefix) {
+                            $content = str_replace($cockpit_storage_prefix, "/", $content);
+                            error_log("replaced !");
+                        }else {
+                            $content = str_replace('/static/', "/", $content);
+                        }
                     }
                     $file_content .= "type = " . '"' . $type . '"' . "\n";
 

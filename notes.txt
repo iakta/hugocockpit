@@ -1,0 +1,28 @@
+Update script to change date of creation of an entry in a collection
+
+1) go to the server and connect to sqlite collection file
+
+cd ../cockpit/storage/data
+# do a backup
+cp collections.sqlite collections.sqlite.bak
+sqlite3 collections.sqlite
+> .tables
+> .schema Progetti592bf38b4f292
+
+CREATE TABLE Progetti592bf38b4f292 ( id INTEGER PRIMARY KEY AUTOINCREMENT, document TEXT );
+
+
+UPDATE Progetti592bf38b4f292 set document=replace(document,'1504189952','1487592002') where id=11;
+UPDATE Progetti592bf38b4f292 set document=replace(document,'1504094402','1501232402') where id=9;
+UPDATE Progetti592bf38b4f292 set document=replace(document,'1504189649','1500033602') where id=8;
+UPDATE Progetti592bf38b4f292 set document=replace(document,'1504189366','1490702402') where id=7;
+
+
+1504189776  9 //ckiosko
+
+1504189366 //7 bejeweled openc -> 1490702402
+
+1504189649 //8 raspici  ->
+
+
+1490702402
