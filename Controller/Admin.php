@@ -214,6 +214,7 @@ class Admin extends \Cockpit\AuthController {
                             $featured_image = '/' . $featured_image;
                         }
 
+                        $fiprev=$featured_image;
                         if($cockpit_storage_prefix) {
                             $featured_image = str_replace($cockpit_storage_prefix, "/", $featured_image);
                         }else {
@@ -221,14 +222,19 @@ class Admin extends \Cockpit\AuthController {
                         }
                         array_push($entry[FRONTMATTER], 'featured_image');
                         $file_content .= "featured_image = " . '"' . $featured_image . '"' . "\n";
+//                        error_log("IMAGE PATH!!! Converted $featured_image to $fiprev");
                     }
                     if($content){
+//                        $prevcont = $content;
                         if($cockpit_storage_prefix) {
+
                             $content = str_replace($cockpit_storage_prefix, "/", $content);
                             error_log("replaced !");
                         }else {
                             $content = str_replace('/static/', "/", $content);
                         }
+//                        if(strcmp($prevcont, $content)!=0)
+//                            error_log("IMAGE PATH!!! Converted $prevcont to $content");
                     }
                     $file_content .= "type = " . '"' . $type . '"' . "\n";
 

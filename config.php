@@ -43,7 +43,7 @@ hugo_script: hugo
 hugo_conf_prefix: ".HUGO_CONFIG_PREFIX." 
 ".HUGO_CONFIG_EXTENSION_KEY.": ".HUGO_CONFIG_EXTENSION."
 ".COCKPIT_STORAGE_PREFIX_KEY.": 
-hugo_extra_params: --cleanDestinationDir
+hugo_extra_params: --cleanDestinationDir --canonifyURLs
 ");
 
 //--------------------------------------------------------------------
