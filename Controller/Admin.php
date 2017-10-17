@@ -141,7 +141,7 @@ class Admin extends \Cockpit\AuthController {
             $count = 0;
             foreach ($entries as $entry){
                 $count++;
-//                error_log("ENTRY!".print_r($entry,1));
+                error_log("ENTRY!".print_r($entry,1));
 
                 foreach ($languages as $language) {
                     error_log("LANGUAGE1 $language for entry " . print_r($entry, 1));
@@ -159,9 +159,6 @@ class Admin extends \Cockpit\AuthController {
 
                     $modified_at = date("c", $entry["_modified"]);
 
-                    # get author
-                    $_by = $entry['_by'];
-                    $author_account = cockpit('hugo')->getUserAccountBy($_by);
 
 
                     //now if we examine the metadata for the field
@@ -170,6 +167,25 @@ class Admin extends \Cockpit\AuthController {
 
                     ///store in entry list of fields taken
                     $entry[FRONTMATTER] = array();
+
+
+                    # get author
+                    $_by = $entry['_by'];
+                    $author_account = cockpit('hugo')->getUserAccountBy($_by);
+                    array_push($entry[FRONTMATTER], "_by");
+
+                    #get tags
+                    $tags = $this->getHugoTags($entry, $fields, $language);
+                    if($tags) {
+                        error_log("TAGS ARE " . print_r($tags, 1));
+                       // tags = [ "Development", "Go", "fast", "Blogging" ]
+                    }
+
+                    //remove anyway
+                    array_push($entry[FRONTMATTER], "tags");
+                    if($language) {
+                        array_push($entry[FRONTMATTER], "tags_" . $language);
+                    }
 
                     //title - look for a hugo field named title
                     //if not localized, try default field
@@ -209,6 +225,19 @@ class Admin extends \Cockpit\AuthController {
                         $file_content .= "slug = " . $this->normalizeTOMLValue($slug) . "\n";
                     if($author_account)
                         $file_content .= "author = " . $this->normalizeTOMLValue($author_account['name']) . "\n";
+                    if($tags && is_array($tags) && count($tags) > 0){
+                        $file_content .= "tags = [" ;
+                        $cnt = count($tags);
+                        $i=0;
+                        foreach ($tags as $tag){
+                            $file_content .=   $this->normalizeTOMLValue($tag) ;
+                            $i++;
+                            if($i < $cnt  ){
+                               $file_content .= ",";
+                            }
+                        }
+                        $file_content .= "]\n";
+                    }
                     if ($featured_image) {
                         //adjust images.. subst /static/media with .. /en/media or /default/media
                         // for example i have images in
@@ -275,8 +304,12 @@ class Admin extends \Cockpit\AuthController {
                         }
 
                         if (is_array($value)) { //image
-                            error_log("VALUE IS ARRAY:" . print_r($value, 1));
-                            $file_content .= $fieldname . ' = "' . $value['path'] . '"' . "\n";
+                            if( $field['type'] == 'image'){
+                                error_log("VALUE IS ARRAY:" . print_r($value, 1));
+                                $file_content .= $fieldname . ' = "' . $value['path'] . '"' . "\n";
+                            }else{
+                                //ignoring??
+                            }
 
                         } else {
                             $file_content .= $fieldname . ' =  ' . $this->normalizeTOMLValue($value) . "\n";
@@ -503,6 +536,53 @@ class Admin extends \Cockpit\AuthController {
         return null;
     }
 
+    private function getHugoTags(&$entry, $fields, $language){
+        $value=null;
+        if(!$language || $language=='default'){
+            $suffix=null;
+        }else{
+            $suffix="_$language";
+        }
+        foreach ($fields as $field){
+            error_log(print_r($field,1));
+            if(isset($field['options']) && isset($field['options']['hugo'])){
+                if(key_exists('tags',$field['options']['hugo']) && $field['options']['hugo']['tags'] == true){
+                    if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
+                        //look for localized value
+                        array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                        array_push($entry[FRONTMATTER],$field['name']);
+                        return $entry[$field['name'].$suffix];
+                    }
+                    if(key_exists($field['name'], $entry)) {
+                        array_push($entry[FRONTMATTER], $field['name']);
+//                        error_log("Entry di ".$field['name'].' = '.print_r($entry[$field['name']],1));
+                        return $entry[$field['name']] ;
+                        return null;
+                    }
+                    return null;
+                }
+            }
+        }
+        //if not found, look for field name
+        foreach ($fields as $field){
+            if($field['type']== 'tags'){
+                if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
+                    //look for localized value
+                    array_push($entry[FRONTMATTER],$field['name'].$suffix);
+                    array_push($entry[FRONTMATTER],$field['name']);
+                    return $entry[$field['name'].$suffix] ;
+                }
+                if(key_exists($field['name'], $entry)) {
+                    array_push($entry[FRONTMATTER], $field['name']);
+                    return $entry[$field['name']] ;
+                }
+                return null;
+            }
+        }
+
+        return null;
+    }
+
     private function getHugoFeaturedImage(&$entry, $fields, $language){
         //look throught all the fields of the given entry
         //and look if one has the options.hugo.name == $name
@@ -515,7 +595,7 @@ class Admin extends \Cockpit\AuthController {
         }
         foreach ($fields as $field){
             if(isset($field['options']) && isset($field['options']['hugo'])){
-                if($field['options']['hugo']['isfeatured'] == true){
+                if(key_exists('isfeatured', $field['options']['hugo']) && $field['options']['hugo']['isfeatured'] == true){
                     if($suffix && $field['localize'] && key_exists($field['name'].$suffix, $entry)){
                         //look for localized value
                         array_push($entry[FRONTMATTER],$field['name'].$suffix);
