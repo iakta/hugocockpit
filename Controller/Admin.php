@@ -159,6 +159,11 @@ class Admin extends \Cockpit\AuthController {
 
                     $modified_at = date("c", $entry["_modified"]);
 
+                    # get author
+                    $_by = $entry['_by'];
+                    $author_account = cockpit('hugo')->getUserAccountBy($_by);
+
+
                     //now if we examine the metadata for the field
                     //we can have.. field name, and options
                     //wehere there are options for Hugo..
@@ -202,6 +207,8 @@ class Admin extends \Cockpit\AuthController {
                         $file_content .= "title = " . $this->normalizeTOMLValue($title) . "\n";
                     if ($slug)
                         $file_content .= "slug = " . $this->normalizeTOMLValue($slug) . "\n";
+                    if($author_account)
+                        $file_content .= "author = " . $this->normalizeTOMLValue($author_account['name']) . "\n";
                     if ($featured_image) {
                         //adjust images.. subst /static/media with .. /en/media or /default/media
                         // for example i have images in

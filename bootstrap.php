@@ -101,6 +101,16 @@ $this->module("hugo")->extend([
         if(key_exists(COCKPIT_STORAGE_PREFIX_KEY, $s))
             return $s[COCKPIT_STORAGE_PREFIX_KEY];
         return null;
+    },
+    'getUserAccountBy' => function($uid){
+        error_log("GET USER ACCOUNT BY $uid");
+        $account = $this->app->storage->findOne("cockpit/accounts", ["_id" => $uid]);
+
+        if (!$account) {
+            return false;
+        }
+        error_log("ACCOUNT: ".print_r($account,1));
+        return $account;
     }
 ]);
 
