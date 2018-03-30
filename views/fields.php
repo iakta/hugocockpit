@@ -123,7 +123,7 @@
             //store hugo collections metafields..
             var collection = this.collection;
             collection.fields.forEach(function(f){
-                if(f.hugoname || (collection.featuredfield && collection.featuredfield == f.name)){
+                if(f.hugoname || (f.options.hugo && f.options.hugo.name) || (collection.featuredfield && collection.featuredfield == f.name)){
                     //get options
                     opts=f.options;
                     if(!opts) return;
@@ -152,16 +152,17 @@
                     else
                         hopts.isfeatured=false;
 
-                    //console.log("HOPTS",hopts,"FILD",f.hugoname,f.isfeatured,f);
+                    console.log("HOPTS",hopts,"FILD",f.hugoname,f.isfeatured,f);
                 }
-
+                console.log("F: ",f);
             });
+
             console.log(this.collection.fields );
             //console.log("Filed[0] hugoname",this.collection.fields[0].hugoname);
 
 
+            console.log(collection);
             App.callmodule('collections:saveCollection', [this.collection.name, collection]).then(function(data) {
-
                 if (data.result) {
 
                     App.ui.notify("Saving successful", "success");
