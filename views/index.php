@@ -50,9 +50,9 @@
     <div class="uk-grid uk-margin-small-top">
         <div class="uk-width-2-3">
         <fieldset class="" data-uk-margin>
-            <div class="uk-form-row" each="{ meta, collection in collections }">
-                <input type="checkbox" bind="meta.selected" name="{ collection.name }" checked="{ collection.selected }"
-                       onclick="{ toggle_collection.bind(this, meta)   }"> { collection.name || collection }
+            <div class="uk-form-row" each="{ collection, collectionName in collections }">
+                <input type="checkbox"  name="{ collection.name }" checked="{ collection.selected }"
+                       onclick="{ toggle_collection.bind(this, collection)   }"> <label for="{ collection.name }">{ collection.name  }</label>
             </div>
         </fieldset>
         </div>
@@ -170,12 +170,12 @@
         toggle_collection(col){
             col.selected = !col.selected;
             this.checkCollectionSelected();
-            console.log("Coll toggle",col.selected);
         }
 
         checkCollectionSelected(){
             for(c in this.collections){
                 col=this.collections[c];
+
                 if(col.selected){
                     this.oneSelected=true;
                     return;
